@@ -4,14 +4,25 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "parse": "npx -p @extensionengine/rtf-parser rtf2txt ri.rtf",
+    "iconv": "iconv -f utf-8 -t windows-1252 \"C:\\Users\\rxMATTEO\\Desktop\\JS PROJECTS\\ria-parser\\ri.txt\" > \"C:\\Users\\rxMATTEO\\Desktop\\JS PROJECTS\\ria-parser\\test.txt\"",
+    "server": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@bacali/rtf-parser": "^1.0.1",
+    "@extensionengine/rtf-parser": "^1.0.1",
+    "encoding": "^0.1.13",
+    "express": "^4.18.2",
     "iconv-lite": "^0.6.3",
     "mammoth": "^1.6.0",
-    "node-unrtf": "^4.1.2"
+    "node-unrtf": "^4.1.2",
+    "windows-1252": "^3.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   }
 }

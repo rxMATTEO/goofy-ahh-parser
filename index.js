@@ -1,23 +1,11 @@
-const { UnRTF } = require("node-unrtf");
-const iconv = require('iconv-lite');
 const mammoth = require("mammoth");
+const fs = require('fs');
+var express = require('express');
+var app = express();
 
-
-const file = 'ri.rtf';
-const unrtf = new UnRTF();
-const buff = (iconv.encode('2023.04.03 ÊËÞ× 09:18:06 Ïðîõîäíàÿ ¹2 ÂÕÎÄ 000001BE8F64 K', 'win1251'));
-
-console.log(iconv.decode(buff, 'utf8'));
-
-(async function () {
-  // const res = await unrtf.convert('./ri.rtf', {
-  //   outputHtml: true,
-  // });
-  const res = await mammoth.convertToHtml({ path: 'ri.docx' });
-  console.log(res.value);
-  const fs = require('fs');
-  fs.writeFile('ri.html', res.value, function (err) {
-
-  });
-  console.log(res);
-})()
+app.get('/', async function(req, res) {
+  const result = await mammoth.convertToHtml({ path: 'ri.docx' });
+  res.send(result.value)
+});
+console.log('listening on port 3000');
+app.listen(3000);
