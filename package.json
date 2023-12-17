@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "parse": "npx -p @extensionengine/rtf-parser rtf2txt ri.rtf",
     "iconv": "iconv -f utf-8 -t windows-1252 \"C:\\Users\\rxMATTEO\\Desktop\\JS PROJECTS\\ria-parser\\ri.txt\" > \"C:\\Users\\rxMATTEO\\Desktop\\JS PROJECTS\\ria-parser\\test.txt\"",
-    "server": "nodemon index.js"
+    "server": "nodemon index.js",
+    "dev": "vite"
   },
   "keywords": [],
   "author": "",
@@ -15,14 +16,24 @@
   "dependencies": {
     "@bacali/rtf-parser": "^1.0.1",
     "@extensionengine/rtf-parser": "^1.0.1",
+    "axios": "^1.6.2",
+    "cors": "^2.8.5",
     "encoding": "^0.1.13",
     "express": "^4.18.2",
     "iconv-lite": "^0.6.3",
+    "jsdom": "^23.0.1",
     "mammoth": "^1.6.0",
     "node-unrtf": "^4.1.2",
+    "universal-dom-parser": "^0.0.3",
+    "vue": "^3.3.11",
     "windows-1252": "^3.0.4"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "@vitejs/plugin-vue": "^4.5.2",
+    "nodemon": "^3.0.2",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.10",
+    "vite-plugin-node": "^3.1.0",
+    "vue-tsc": "^1.8.25"
   }
 }
