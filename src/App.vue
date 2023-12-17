@@ -78,7 +78,7 @@ const filters = ref({
   lastName: {value: null, matchMode: FilterMatchMode.STARTS_WITH},
   middleName: {value: null, matchMode: FilterMatchMode.IN},
   page: {value: null, matchMode: FilterMatchMode.EQUALS},
-  pageNumber: {value: null, matchMode: FilterMatchMode.IN},
+  pageNumber: {value: null, matchMode: FilterMatchMode.EQUALS},
   room: {value: null, matchMode: FilterMatchMode.STARTS_WITH},
   info: {value: null, matchMode: FilterMatchMode.IN},
   rows: {value: null, matchMode: FilterMatchMode.STARTS_WITH},
