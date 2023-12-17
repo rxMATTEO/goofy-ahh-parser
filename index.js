@@ -25,7 +25,7 @@ function parseInfo(htmlString) {
 }
 
 function peopleParser(startIndex, peopleArray, parser, initial = true){
-  const chel = {
+  let chel = {
     info: [],
   };
   let i = startIndex;
@@ -34,7 +34,17 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
     const infoBlock = (parser.window.document.querySelectorAll('p')[i]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
     if(!infoBlock) return peopleArray;
     if(!initial && !noNameBlocks.find(block => infoBlock.toString().trim().toLowerCase().includes(block.toLowerCase())) && infoBlock.length > 0) {
-        const [first, last] = (parser.window.document.querySelectorAll('p')[i - 1]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i))[0].split(' ');
+      if(!chel.firstName) {
+        const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
+        chel.firstName = firstName;
+        chel.lastName = lastName;
+        chel.middleName = middleName;
+      }
+      peopleArray.push(chel);
+      chel = {
+        info: [],
+      }
+      const [first, last] = (parser.window.document.querySelectorAll('p')[i - 1]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i))[0].split(' ');
         chel.firstName = last;
         chel.lastName = first;
         chel.middleName = infoBlock[0];
