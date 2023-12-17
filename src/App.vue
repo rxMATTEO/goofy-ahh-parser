@@ -4,9 +4,12 @@ import {onMounted, ref} from "vue";
 
 const body = ref(null);
 const info = ref(null);
+const people = ref(null);
 onMounted(async () => {
   body.value = (await axios.get('http://localhost:3000/')).data;
   info.value = (await axios.get('http://localhost:3000/info')).data;
+  people.value = (await axios.get('http://localhost:3000/people')).data;
+  console.log(people.value)
 })
 </script>
 
@@ -25,6 +28,9 @@ onMounted(async () => {
       <div>
         Время: {{ info.time }}
       </div>
+      {{
+      people
+      }}
       <!--  <DataTable :value="headers?.data">-->
       <!--    <Column v-for="header in headers?.data" :header="header" />-->
       <!--  </DataTable>-->
