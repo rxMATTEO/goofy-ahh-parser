@@ -24,38 +24,51 @@ function parseInfo(htmlString) {
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
 }
 
-function peopleParser(startIndex, peopleArray, parser){
+function peopleParser(startIndex, peopleArray, parser, initial = true){
   const chel = {
     info: [],
   };
   let i = startIndex;
+  const noNameBlocks = ['2023', 'Помещение', 'Дата', 'Стр', "Выход", "Вход",];
   while (true) {
     const infoBlock = (parser.window.document.querySelectorAll('p')[i]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
     if(!infoBlock) return peopleArray;
-    if (i === startIndex) {
-      const infoBlock = (parser.window.document.querySelectorAll('p')[i]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
-      chel.page = infoBlock[0];
-      chel.pageNumber = infoBlock[0].split(' ')[1];
-    }
-    else if (i === startIndex + 1) {
-      chel.room = infoBlock[1];
-    } else if (i === startIndex + 2) {
-      chel.rows = infoBlock;
-    } else if (i === startIndex + 5) {
-      chel.middleName = infoBlock[0];
-    } else if (i === startIndex + 4) {
-      const [first, last] = infoBlock[0].split(' ');
-      chel.lastName = first;
-      chel.firstName = last;
-    } else if (!infoBlock.toString().trim().startsWith('Стр.')) {
-      chel.info.push(infoBlock);
-    } else {
-      peopleArray.push(chel);
-      break;
+    if(!initial && !noNameBlocks.find(block => infoBlock.toString().trim().toLowerCase().includes(block.toLowerCase())) && infoBlock.length > 0) {
+        const [first, last] = (parser.window.document.querySelectorAll('p')[i - 1]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i))[0].split(' ');
+        chel.firstName = last;
+        chel.lastName = first;
+        chel.middleName = infoBlock[0];
+      } else {
+      if (i === startIndex) {
+        const infoBlock = (parser.window.document.querySelectorAll('p')[i]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
+        chel.page = infoBlock[0];
+        chel.pageNumber = infoBlock[0].split(' ')[1];
+      } else if (i === startIndex + 1) {
+        chel.room = infoBlock[1];
+      } else if (i === startIndex + 2) {
+        chel.rows = infoBlock;
+      } else if (initial && i === startIndex + 5) {
+        chel.middleName = infoBlock[0];
+      } else if (initial && i === startIndex + 4) {
+        const [first, last] = infoBlock[0].split(' ');
+        chel.lastName = first;
+        chel.firstName = last;
+      } else if (!infoBlock.toString().trim().startsWith('Стр.')) {
+        chel.info.push(infoBlock);
+      } else {
+        if(!chel.firstName) {
+          const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
+          chel.firstName = firstName;
+          chel.lastName = lastName;
+          chel.middleName = middleName;
+        }
+        peopleArray.push(chel);
+        break;
+      }
     }
     i += 1;
   }
-  return peopleParser(i, peopleArray, parser);
+  return peopleParser(i, peopleArray, parser, false);
 }
 
 function parsePeople(htmlString) {
