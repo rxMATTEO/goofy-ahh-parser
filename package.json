@@ -1,10 +1,9 @@
 {
-  "name": "untitled",
+  "name": "ri parser",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "parse": "npx -p @extensionengine/rtf-parser rtf2txt ri.rtf",
     "iconv": "iconv -f utf-8 -t windows-1252 \"C:\\Users\\rxMATTEO\\Desktop\\JS PROJECTS\\ria-parser\\ri.txt\" > \"C:\\Users\\rxMATTEO\\Desktop\\JS PROJECTS\\ria-parser\\test.txt\"",
     "server": "nodemon index.js",

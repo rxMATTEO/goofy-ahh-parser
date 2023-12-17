@@ -26,7 +26,7 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
     info: [],
   };
   let i = startIndex;
-  const noNameBlocks = ['2023', 'Помещение', 'Дата', 'Стр', "Выход", "Вход",];
+  const noNameBlocks = ['2023', new Date().getFullYear().toString(), 'Помещение', 'Дата', 'Стр', "Выход", "Вход",];
   while (true) {
     const infoBlock = (parser.window.document.querySelectorAll('p')[i]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
     if(!infoBlock) return peopleArray;
@@ -98,6 +98,6 @@ app.get('/', async function (req, res) {
   const result = await mammoth.convertToHtml({path: 'ri.docx'});
   res.send(result.value);
 });
-console.log('listening on port 3000');
-app.listen(3000);
+console.log('listening on port 3001');
+app.listen(3001);
 

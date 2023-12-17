@@ -22,10 +22,12 @@ const body = ref(null);
 const info = ref(null);
 const people: Ref<Person[] | null> = ref(null);
 
+const api = 'http://localhost:3001';
+
 onMounted(async () => {
-  body.value = (await axios.get('http://localhost:3000/')).data;
-  info.value = (await axios.get('http://localhost:3000/info')).data;
-  people.value = (((await axios.get('http://localhost:3000/people')).data) as Person[]).map(
+  body.value = (await axios.get(api)).data;
+  info.value = (await axios.get(`${api}/info`)).data;
+  people.value = (((await axios.get(`${api}/people`)).data) as Person[]).map(
       (person: Person) => {
         return {
           ...person,
@@ -52,13 +54,12 @@ onMounted(async () => {
         }
       }
   );
-  console.log(people.value);
 });
 
 const columns = computed(() => {
   return {
-    firstName: 'Имя',
     lastName: 'Фамилия',
+    firstName: 'Имя',
     middleName: 'Отчество',
     // page: 'Страница',
     pageNumber: 'Номер страницы',
