@@ -7,10 +7,14 @@ import 'primevue/resources/themes/md-dark-deeppurple/theme.css';
 import "primeflex/primeflex.css";
 import 'primeicons/primeicons.css';
 import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import Divider from "primevue/divider";
 
 const app = createApp(App);
 app.use(PrimeVue, {ripple: true});
 app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.component('InputText', InputText);
+app.component('Button', Button);
+app.component('Divider', Divider);
 app.mount('#app');

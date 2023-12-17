@@ -83,6 +83,24 @@ const filters = ref({
   info: {value: null, matchMode: FilterMatchMode.IN},
   rows: {value: null, matchMode: FilterMatchMode.STARTS_WITH},
 });
+
+const expandedPeople = ref(null);
+
+const expandAll = () => {
+  expandedPeople.value = people.value?.filter((p) => p.firstName);
+};
+const collapseAll = () => {
+  expandedPeople.value = null;
+};
+
+const eventTypeMatch = (k: string) => ({
+  date: "Дата",
+  keyLabel: "Ключ",
+  time: "Время прохода",
+  exit: "Проходная",
+  type: "Тип",
+  pass: 'Ключ'
+}[k])
 </script>
 
 <template>
@@ -103,7 +121,8 @@ const filters = ref({
     </div>
   </div>
 
-  <DataTable v-model:filters="filters" :value="people" paginator :rows="10" removableSort
+  <DataTable v-model:filters="filters" v-model:expandedRows="expandedPeople"
+             :value="people" paginator :rows="10" removableSort
              :rowsPerPageOptions="rowsPerPage" :loading="!people" showGridlines
              :filterDisplay="'row'" :globalFilterFields="['firstName', 'lastName', 'middleName']"
   >
@@ -113,21 +132,33 @@ const filters = ref({
                 <i class="pi pi-search"/>
                 <InputText v-model="filters['global'].value" placeholder="Поиск"/>
             </span>
+        <Button text icon="pi pi-plus" label="Раскрыть все" @click="expandAll"/>
+        <Button text icon="pi pi-minus" label="Свернуть все" @click="collapseAll"/>
       </div>
     </template>
+    <Column expander style="width: 5rem"/>
     <Column v-for="[k,v] in Object.entries(columns)" :header="v" :field="k" sortable :key="k"
             :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
-      <template #body="{data}" v-if="k === 'info'">
-        <div v-for="event in data[k]">
-          <p>{{ event?.date || "" }} {{ event?.keyLabel || "" }} {{ event?.time || "" }} {{ event?.exit || "" }}
-            {{ event?.type || "" }} {{ event?.pass || "" }}</p>
-        </div>
+      <template #body="{data: {info: [event]}}" v-if="k === 'info'">
+        <p>{{ event?.date || "" }} {{ event?.keyLabel || "" }} {{ event?.time || "" }} {{ event?.exit || "" }}
+          {{ event?.type || "" }} {{ event?.pass || "" }} ...</p><!--empty cuz expander-->
       </template>
       <template #filter="{filterModel, filterCallback}">
         <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
                    :placeholder="`Искать по ${v}`"/>
       </template>
     </Column>
+
+    <template #expansion="{ data: {info} }">
+      <div v-for="infoItem in info">
+        <p v-for="[k,v] in Object.entries(infoItem)">
+          <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
+          <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
+          <span v-else>{{ v }}</span>
+        </p>
+        <Divider/>
+      </div>
+    </template>
   </DataTable>
 </template>
 
