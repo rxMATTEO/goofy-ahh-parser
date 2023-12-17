@@ -25,7 +25,34 @@ const people: Ref<Person[] | null> = ref(null);
 onMounted(async () => {
   body.value = (await axios.get('http://localhost:3000/')).data;
   info.value = (await axios.get('http://localhost:3000/info')).data;
-  people.value = (await axios.get('http://localhost:3000/people')).data;
+  people.value = (((await axios.get('http://localhost:3000/people')).data) as Person[]).map(
+      (person: Person) => {
+        return {
+          ...person,
+          info: person.info.map(
+              ([date, keyLabel, time, exit, type, pass, k]) => {
+                return {
+                  date,
+                  keyLabel,
+                  time,
+                  exit,
+                  type,
+                  pass: pass || k ? `${pass} ${k}` : undefined
+                }
+              }
+          ).map(obj => {
+                Object.keys(obj).forEach(key => {
+                  if (obj[key] === undefined) {
+                    delete obj[key];
+                  }
+                });
+                return obj;
+              }
+          )
+        }
+      }
+  );
+  console.log(people.value);
 });
 
 const columns = computed(() => {
@@ -46,16 +73,15 @@ const rowsPerPage = computed(() => {
 });
 
 const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  firstName: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  lastName: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  middleName: { value: null, matchMode: FilterMatchMode.IN },
-  page: { value: null, matchMode: FilterMatchMode.EQUALS },
-  pageNumber: { value: null, matchMode: FilterMatchMode.IN },
-  room: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  info: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  rows: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-
+  global: {value: null, matchMode: FilterMatchMode.CONTAINS},
+  firstName: {value: null, matchMode: FilterMatchMode.STARTS_WITH},
+  lastName: {value: null, matchMode: FilterMatchMode.STARTS_WITH},
+  middleName: {value: null, matchMode: FilterMatchMode.IN},
+  page: {value: null, matchMode: FilterMatchMode.EQUALS},
+  pageNumber: {value: null, matchMode: FilterMatchMode.IN},
+  room: {value: null, matchMode: FilterMatchMode.STARTS_WITH},
+  info: {value: null, matchMode: FilterMatchMode.IN},
+  rows: {value: null, matchMode: FilterMatchMode.STARTS_WITH},
 });
 </script>
 
@@ -84,17 +110,22 @@ const filters = ref({
     <template #header>
       <div class="flex justify-content-end">
             <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText v-model="filters['global'].value" placeholder="Поиск" />
+                <i class="pi pi-search"/>
+                <InputText v-model="filters['global'].value" placeholder="Поиск"/>
             </span>
       </div>
     </template>
-    <Column v-for="[k,v] in Object.entries(columns)" :header="v" :field="k" sortable :key="k" :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
-      <template #body="{data}">
-        {{ data[k] }}
+    <Column v-for="[k,v] in Object.entries(columns)" :header="v" :field="k" sortable :key="k"
+            :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+      <template #body="{data}" v-if="k === 'info'">
+        <div v-for="event in data[k]">
+          <p>{{ event?.date || "" }} {{ event?.keyLabel || "" }} {{ event?.time || "" }} {{ event?.exit || "" }}
+            {{ event?.type || "" }} {{ event?.pass || "" }}</p>
+        </div>
       </template>
       <template #filter="{filterModel, filterCallback}">
-        <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter" :placeholder="`Искать по ${v}`" />
+        <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+                   :placeholder="`Искать по ${v}`"/>
       </template>
     </Column>
   </DataTable>
