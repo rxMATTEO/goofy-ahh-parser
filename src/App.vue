@@ -39,6 +39,10 @@ const columns = computed(() => {
     info: 'Информация (входы-выходы)',
   };
 });
+
+const rowsPerPage = computed(() => {
+  return [10, 20, 50];
+});
 </script>
 
 <template>
@@ -59,7 +63,7 @@ const columns = computed(() => {
     </div>
 
     <template v-if="people">
-      <DataTable :value="people">
+      <DataTable :value="people" paginator :rows="10" :rowsPerPage="[10, 20, 50]">
         <Column v-for="[k,v] in Object.entries(columns)" :header="v" :field="k" />
       </DataTable>
     </template>
