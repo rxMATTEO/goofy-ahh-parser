@@ -1,11 +1,8 @@
 const mammoth = require("mammoth");
-const fs = require('fs');
-const DOMParser = require('universal-dom-parser');
 const express = require('express');
 const cors = require("cors");
 const app = express();
 const jsdom = require("jsdom");
-const {info} = require("autoprefixer");
 
 app.use(cors());
 
@@ -84,9 +81,6 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
 function parsePeople(htmlString) {
   const parser = new jsdom.JSDOM(htmlString);
   const people = [];
-  let chel = {
-    info: []
-  };
   return peopleParser(4, people, parser);
 }
 
