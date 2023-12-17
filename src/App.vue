@@ -11,22 +11,24 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="info">
-    <div>
-      Тип событий: {{ info.eventsType }}
+  <div class="p-10">
+    <div v-if="info" class="flex place-content-between">
+      <div>
+        Тип событий: {{ info.eventsType }}
+      </div>
+      <div>
+        {{ info.creationDate }}
+      </div>
+      <div>
+        Дата: {{ info.dates }}
+      </div>
+      <div>
+        Время: {{ info.time }}
+      </div>
+      <!--  <DataTable :value="headers?.data">-->
+      <!--    <Column v-for="header in headers?.data" :header="header" />-->
+      <!--  </DataTable>-->
     </div>
-    <div>
-      {{ info.creationDate }}
-    </div>
-    <div>
-      Дата: {{ info.dates }}
-    </div>
-    <div>
-      Время: {{ info.time }}
-    </div>
-<!--  <DataTable :value="headers?.data">-->
-<!--    <Column v-for="header in headers?.data" :header="header" />-->
-<!--  </DataTable>-->
   </div>
 </template>
 
