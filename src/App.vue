@@ -21,11 +21,17 @@ type Person = {
 const body = ref(null);
 const info = ref(null);
 const people: Ref<Person[] | null> = ref(null);
+const error = ref(null);
 
 const api = 'http://localhost:3001';
 
 onMounted(async () => {
-  body.value = (await axios.get(api)).data;
+  try {
+    body.value = (await axios.get(api)).data;
+  }
+  catch {
+    error.value = 'Не удалось подключиться к серверу. Попробуй его запустить: npm run server';
+  }
   info.value = (await axios.get(`${api}/info`)).data;
   people.value = (((await axios.get(`${api}/people`)).data) as Person[]).map(
       (person: Person) => {
@@ -106,6 +112,9 @@ const eventTypeMatch = (k: string) => ({
 
 <template>
   <div class="p-2">
+    <div v-if="error">
+      {{ error }}
+    </div>
     <div v-if="info" class="flex justify-content-between">
       <div>
         Тип событий: {{ info.eventsType }}
