@@ -37,7 +37,12 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
         chel.lastName = lastName;
         chel.middleName = middleName;
       }
-      peopleArray.push(chel);
+      const foundChel = peopleArray.find(ch => chel.firstName === ch.firstName && chel.lastName === ch.lastName && chel.middleName === ch.middleName);
+      if(foundChel){
+        foundChel.info.push(...chel.info);
+      } else {
+        peopleArray.push(chel);
+      }
       chel = {
         info: [],
       }
@@ -69,7 +74,12 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
           chel.lastName = lastName;
           chel.middleName = middleName;
         }
-        peopleArray.push(chel);
+        const foundChel = peopleArray.find(ch => chel.firstName === ch.firstName && chel.lastName === ch.lastName && chel.middleName === ch.middleName);
+        if(foundChel){
+          foundChel.info.push(...chel.info);
+        } else {
+          peopleArray.push(chel);
+        }
         break;
       }
     }
