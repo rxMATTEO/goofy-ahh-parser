@@ -7,6 +7,15 @@ type PersonInfo = {
   event: string[]
 }
 
+type Info = {
+  date: string;
+  exit: string;
+  keyLabel: string;
+  pass: string;
+  time: string;
+  type: string;
+}
+
 type Person = {
   firstName: string
   lastName: string
@@ -15,7 +24,10 @@ type Person = {
   pageNumber: string
   room: string
   rows: string[]
-  info: PersonInfo[]
+  info: Info[]
+  dates: {
+    [k in string]: Info[]
+  }
 }
 
 const body = ref(null);
@@ -28,8 +40,7 @@ const api = 'http://localhost:3001';
 onMounted(async () => {
   try {
     body.value = (await axios.get(api)).data;
-  }
-  catch {
+  } catch {
     error.value = 'Не удалось подключиться к серверу. Попробуй его запустить: npm run server';
   }
   info.value = (await axios.get(`${api}/info`)).data;
@@ -60,6 +71,20 @@ onMounted(async () => {
         }
       }
   );
+
+  people.value?.map(chel => {
+    chel.dates = {};
+    chel.info.forEach(info => {
+      if (!info.date) return;
+      const chelDates = chel.dates[info.date];
+      if (chelDates) {
+        chel.dates[info.date].push(info);
+      } else {
+        chel.dates[info.date] = [info];
+      }
+    });
+    return chel;
+  });
 });
 
 const columns = computed(() => {
@@ -107,7 +132,44 @@ const eventTypeMatch = (k: string) => ({
   exit: "Проходная",
   type: "Тип",
   pass: 'Ключ'
-}[k])
+}[k]);
+
+function formateDate(info: Info[]) {
+  const firstEnter = info[0].time;
+  const lastExit = info[info.length - 1].time;
+
+  if(!firstEnter || !lastExit) {
+    return {
+      late: 'Неизвестно'
+    }
+  }
+
+  let difference = (getDate(lastExit) - getDate(firstEnter));
+
+  return {
+    // allTime: result,
+    enter: firstEnter,
+    exit: lastExit,
+    worked: getResultFromDate(difference).str,
+    late: getResultFromDate(getDate(firstEnter) - getDate("9:00")).str,
+    overworked: getResultFromDate(getDate(lastExit) - getDate("18:00")).str,
+  };
+}
+
+function getDate(date: string){
+  return new Date(0, 0,0, date.split(':')[0], date.split(':')[1]);
+}
+
+function getResultFromDate(date: string){
+  let hours = Math.floor((date % 86400000) / 3600000);
+  let minutes = Math.round(((date % 86400000) % 3600000) / 60000);
+  let result = hours + ':' + minutes;
+  return {
+    hours,
+    minutes,
+    str: `${hours}:${minutes}`
+  };
+}
 </script>
 
 <template>
@@ -159,14 +221,24 @@ const eventTypeMatch = (k: string) => ({
       </template>
     </Column>
 
-    <template #expansion="{ data: {info} }">
-      <div v-for="infoItem in info">
-        <p v-for="[k,v] in Object.entries(infoItem)">
-          <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
-          <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
-          <span v-else>{{ v }}</span>
-        </p>
-        <Divider/>
+    <template #expansion="{ data: {info,dates} }">
+      <div>
+        <Tabview>
+          <Tabpanel v-for="date in Object.entries(dates)" :header="date[0]">
+            {{ formateDate(date[1]) }}
+          </Tabpanel>
+        </Tabview>
+        <div class="mt-5">
+          Все события:
+          <div v-for="infoItem in info">
+            <p v-for="[k,v] in Object.entries(infoItem)">
+              <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
+              <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
+              <span v-else>{{ v }}</span>
+            </p>
+            <Divider/>
+          </div>
+        </div>
       </div>
     </template>
   </DataTable>
