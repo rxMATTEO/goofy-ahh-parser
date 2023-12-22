@@ -12,6 +12,8 @@ import Divider from "primevue/divider";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import Chart from "primevue/chart";
+import Timeline from "primevue/timeline";
+import Card from "primevue/card";
 
 const app = createApp(App);
 app.use(PrimeVue, {ripple: true});
@@ -23,4 +25,6 @@ app.component('Divider', Divider);
 app.component('Tabview', TabView);
 app.component('Tabpanel', TabPanel);
 app.component('Chart', Chart);
+app.component('Timeline', Timeline);
+app.component('Card', Card);
 app.mount('#app');
