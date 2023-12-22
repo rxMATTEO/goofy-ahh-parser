@@ -237,19 +237,25 @@ function getChartOptions(date) {
 }
 
 const events = ref([
-  { status: 'Ordered', date: '15/10/2020 10:30', icon: 'pi pi-shopping-cart', color: '#9C27B0', image: 'game-controller.jpg' },
-  { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' },
-  { status: 'Shipped', date: '15/10/2020 16:15', icon: 'pi pi-shopping-cart', color: '#FF9800' },
-  { status: 'Delivered', date: '16/10/2020 10:00', icon: 'pi pi-check', color: '#607D8B' }
+  {
+    status: 'Ordered',
+    date: '15/10/2020 10:30',
+    icon: 'pi pi-shopping-cart',
+    color: '#9C27B0',
+    image: 'game-controller.jpg'
+  },
+  {status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7'},
+  {status: 'Shipped', date: '15/10/2020 16:15', icon: 'pi pi-shopping-cart', color: '#FF9800'},
+  {status: 'Delivered', date: '16/10/2020 10:00', icon: 'pi pi-check', color: '#607D8B'}
 ]);
 
-function getEvents(data){
+function getEvents(data) {
   console.log(data)
-  return data.map( d => {
+  return data.map(d => {
     return {
       status: d.type,
       date: d.time,
-      icon: d.type === 'ВХОД' ? 'pi pi-sign-in': 'pi pi-sign-out',
+      icon: d.type === 'ВХОД' ? 'pi pi-sign-in' : 'pi pi-sign-out',
       rest: d
     }
   })
@@ -334,7 +340,9 @@ function getEvents(data){
 
             <Timeline :value="getEvents(data)" align="alternate" class="customized-timeline">
               <template #marker="slotProps">
-                <span class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1" :style="{ backgroundColor: slotProps.item.color }">
+                <span
+                    class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
+                    :style="{ backgroundColor: slotProps.item.color }">
                     <i :class="slotProps.item.icon"></i>
                 </span>
               </template>
@@ -347,12 +355,12 @@ function getEvents(data){
                     {{ slotProps.item.date }}
                   </template>
                   <template #content>
-<!--                    <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-1" />-->
+                    <!--                    <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-1" />-->
                     <p v-for="[k,v] in Object.entries(slotProps.item.rest)">
                       {{ v }}
                     </p>
 
-<!--                    <Button label="Read more" text></Button>-->
+                    <!--                    <Button label="Read more" text></Button>-->
                   </template>
                 </Card>
               </template>
