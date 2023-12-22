@@ -11,6 +11,7 @@ import Button from "primevue/button";
 import Divider from "primevue/divider";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
+import Chart from "primevue/chart";
 
 const app = createApp(App);
 app.use(PrimeVue, {ripple: true});
@@ -21,4 +22,5 @@ app.component('Button', Button);
 app.component('Divider', Divider);
 app.component('Tabview', TabView);
 app.component('Tabpanel', TabPanel);
+app.component('Chart', Chart);
 app.mount('#app');

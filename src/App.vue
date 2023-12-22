@@ -139,7 +139,7 @@ function formateDate(info: Info[]) {
   const firstEnter = info[0].time;
   const lastExit = info[info.length - 1].time;
 
-  if(!firstEnter || !lastExit) {
+  if (!firstEnter || !lastExit) {
     return {
       late: 'Неизвестно'
     }
@@ -150,17 +150,15 @@ function formateDate(info: Info[]) {
 
   // console.log(info.slice(1, -1), info)
 
-  const allexitsSum = info.slice(0, -1).filter( inf => inf.type !== 'ВХОД');
+  const allexitsSum = info.slice(0, -1).filter(inf => inf.type !== 'ВХОД');
   const allNonExist = info.slice(1).filter(inf => inf.type === 'ВХОД');
 
-  console.log(allexitsSum, allNonExist)
 
 
-  let sum = { hours: 0, minutes: 0 };
+  let sum = {hours: 0, minutes: 0};
   for (let i = 0; i < allNonExist.length; i++) {
-    if(!allexitsSum[i] || !allNonExist[i]) break;
-    const { hours, minutes } = getResultFromDate(getDate(allNonExist[i].time) - getDate(allexitsSum[i].time));
-    console.log(hours, minutes)
+    if (!allexitsSum[i] || !allNonExist[i]) break;
+    const {hours, minutes} = getResultFromDate(getDate(allNonExist[i].time) - getDate(allexitsSum[i].time));
     sum.minutes += minutes;
     sum.hours += hours;
   }
@@ -178,11 +176,11 @@ function formateDate(info: Info[]) {
   };
 }
 
-function getDate(date: string){
-  return new Date(0, 0,0, date.split(':')[0], date.split(':')[1]);
+function getDate(date: string) {
+  return new Date(0, 0, 0, date.split(':')[0], date.split(':')[1]);
 }
 
-function getResultFromDate(date: string){
+function getResultFromDate(date: string) {
   let hours = Math.floor((date % 86400000) / 3600000);
   let minutes = Math.round(((date % 86400000) % 3600000) / 60000);
   return {
@@ -190,6 +188,53 @@ function getResultFromDate(date: string){
     minutes,
     str: `${hours}:${minutes}`
   };
+}
+
+onMounted(() => {
+  chartData.value = setChartData();
+  chartOptions.value = setChartOptions();
+});
+
+const chartData = ref();
+const chartOptions = ref();
+
+const setChartData = () => {
+  const documentStyle = getComputedStyle(document.body);
+
+  return {
+    labels: ['Работал', "Отсутствовал"],
+    datasets: [
+      {
+        data: [540, 325],
+        backgroundColor: [documentStyle.getPropertyValue('--blue-500'), documentStyle.getPropertyValue('--yellow-500'), documentStyle.getPropertyValue('--green-500')],
+        hoverBackgroundColor: [documentStyle.getPropertyValue('--blue-400'), documentStyle.getPropertyValue('--yellow-400'), documentStyle.getPropertyValue('--green-400')]
+      }
+    ]
+  };
+};
+
+const setChartOptions = () => {
+  const documentStyle = getComputedStyle(document.documentElement);
+  const textColor = documentStyle.getPropertyValue('--text-color');
+
+  return {
+    plugins: {
+      legend: {
+        labels: {
+          usePointStyle: true,
+          color: textColor
+        }
+      }
+    }
+  };
+};
+
+function getChartOptions(date){
+  const actualData = (formateDate(date));
+  if(actualData.worked && actualData.notExisted) {
+    console.log([ +actualData.worked.split('')[0] * 60 + +actualData.worked.split('')[2]  ,actualData.notExisted.hours * 60 + actualData.notExisted.minutes]);
+    return [ +actualData.worked.split('')[0] * 60 + +actualData.worked.split('')[2]  ,actualData.notExisted.hours * 60 + actualData.notExisted.minutes];
+  }
 }
 </script>
 
@@ -246,16 +291,32 @@ function getResultFromDate(date: string){
       <div>
         <Tabview>
           <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date">
-            {{ formateDate(data) }}
-            <p>Вошел: {{ formateDate(data).enter }}</p>
-            <p>Вышел: {{ formateDate(data).exit }}</p>
-            <p>Опоздал: {{ formateDate(data).late }}</p>
-            <p>Работал: {{ formateDate(data).worked }}</p>
-            <p v-if="formateDate(data).notExisted">Отсутствовал: {{ `${formateDate(data).notExisted.hours} часов ${formateDate(data).notExisted.minutes} минут` }}</p>
-            <p v-else>Не выходил</p>
+            <div class="flex justify-content-between">
+              <p>Вошел: {{ formateDate(data).enter }}</p>
+              <p>Вышел: {{ formateDate(data).exit }}</p>
+              <p>Опоздал: {{ formateDate(data).late }}</p>
+              <p>Работал: {{ formateDate(data).worked }}</p>
+              <p v-if="formateDate(data).notExisted">Отсутствовал:
+                {{ `${formateDate(data).notExisted.hours} часов ${formateDate(data).notExisted.minutes} минут` }}</p>
+              <p v-else>Не выходил</p>
+
+              <div class="card flex justify-content-center">
+                {{formateDate(data).notExisted}}
+                <Chart type="pie" :data="{
+    labels: ['Работал (минут)', 'Отсутствовал (минут)'],
+                datasets: [
+                {
+                data: getChartOptions(data),
+                backgroundColor: ['#00FF69FF', '#FF0045FF'],
+                hoverBackgroundColor: '#00C2FFFF'
+                }
+                ]
+              }" :options="chartOptions" class="w-full md:w-30rem"/>
+              </div>
+            </div>
 
             <div class="mt-5">
-              Все события:
+              Все события по текущей дате:
               <div v-for="infoItem in info.filter(i => i.date === date)">
                 <p v-for="[k,v] in Object.entries(infoItem)">
                   <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
