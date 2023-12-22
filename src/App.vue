@@ -85,6 +85,7 @@ onMounted(async () => {
     });
     return chel;
   });
+  console.log(people.value)
 });
 
 const columns = computed(() => {
@@ -146,6 +147,25 @@ function formateDate(info: Info[]) {
 
   let difference = (getDate(lastExit) - getDate(firstEnter));
 
+
+  // console.log(info.slice(1, -1), info)
+
+  const allexitsSum = info.slice(0, -1).filter( inf => inf.type === 'ВЫХОД');
+  const allNonExist = info.slice(1).filter(inf => inf.type === 'ВХОД');
+
+  console.log(allexitsSum, allNonExist)
+
+
+  let sum = { hours: 0, minutes: 0 };
+  for (let i = 0; i < allNonExist.length -1; i++) {
+    const { hours, minutes } = getResultFromDate(getDate(allNonExist[i].time) - getDate(allexitsSum[i].time));
+    console.log(hours, minutes)
+    sum.minutes += minutes;
+    sum.hours += hours;
+  }
+  // console.log(new Date(allexitsSum))
+
+
   return {
     // allTime: result,
     enter: firstEnter,
@@ -153,6 +173,7 @@ function formateDate(info: Info[]) {
     worked: getResultFromDate(difference).str,
     late: getResultFromDate(getDate(firstEnter) - getDate("9:00")).str,
     overworked: getResultFromDate(getDate(lastExit) - getDate("18:00")).str,
+    notExisted: sum
   };
 }
 
