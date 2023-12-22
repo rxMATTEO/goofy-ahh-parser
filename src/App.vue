@@ -94,8 +94,8 @@ const columns = computed(() => {
     firstName: 'Имя',
     middleName: 'Отчество',
     // page: 'Страница',
-    pageNumber: 'Номер страницы',
-    room: 'Комната',
+    // pageNumber: 'Номер страницы',
+    // room: 'Комната',
     // rows: 'Строки',
     info: 'Информация (входы-выходы)',
   };
