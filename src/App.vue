@@ -150,14 +150,15 @@ function formateDate(info: Info[]) {
 
   // console.log(info.slice(1, -1), info)
 
-  const allexitsSum = info.slice(0, -1).filter( inf => inf.type === 'ВЫХОД');
+  const allexitsSum = info.slice(0, -1).filter( inf => inf.type !== 'ВХОД');
   const allNonExist = info.slice(1).filter(inf => inf.type === 'ВХОД');
 
   console.log(allexitsSum, allNonExist)
 
 
   let sum = { hours: 0, minutes: 0 };
-  for (let i = 0; i < allNonExist.length -1; i++) {
+  for (let i = 0; i < allNonExist.length; i++) {
+    if(!allexitsSum[i] || !allNonExist[i]) break;
     const { hours, minutes } = getResultFromDate(getDate(allNonExist[i].time) - getDate(allexitsSum[i].time));
     console.log(hours, minutes)
     sum.minutes += minutes;
@@ -184,7 +185,6 @@ function getDate(date: string){
 function getResultFromDate(date: string){
   let hours = Math.floor((date % 86400000) / 3600000);
   let minutes = Math.round(((date % 86400000) % 3600000) / 60000);
-  let result = hours + ':' + minutes;
   return {
     hours,
     minutes,
@@ -245,21 +245,28 @@ function getResultFromDate(date: string){
     <template #expansion="{ data: {info,dates} }">
       <div>
         <Tabview>
-          <Tabpanel v-for="date in Object.entries(dates)" :header="date[0]">
-            {{ formateDate(date[1]) }}
+          <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date">
+            {{ formateDate(data) }}
+            <p>Вошел: {{ formateDate(data).enter }}</p>
+            <p>Вышел: {{ formateDate(data).exit }}</p>
+            <p>Опоздал: {{ formateDate(data).late }}</p>
+            <p>Работал: {{ formateDate(data).worked }}</p>
+            <p v-if="formateDate(data).notExisted">Отсутствовал: {{ `${formateDate(data).notExisted.hours} часов ${formateDate(data).notExisted.minutes} минут` }}</p>
+            <p v-else>Не выходил</p>
+
+            <div class="mt-5">
+              Все события:
+              <div v-for="infoItem in info.filter(i => i.date === date)">
+                <p v-for="[k,v] in Object.entries(infoItem)">
+                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
+                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
+                  <span v-else>{{ v }}</span>
+                </p>
+                <Divider/>
+              </div>
+            </div>
           </Tabpanel>
         </Tabview>
-        <div class="mt-5">
-          Все события:
-          <div v-for="infoItem in info">
-            <p v-for="[k,v] in Object.entries(infoItem)">
-              <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
-              <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
-              <span v-else>{{ v }}</span>
-            </p>
-            <Divider/>
-          </div>
-        </div>
       </div>
     </template>
   </DataTable>
