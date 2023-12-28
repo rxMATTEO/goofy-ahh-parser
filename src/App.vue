@@ -74,15 +74,22 @@ onMounted(async () => {
 
   people.value?.map(chel => {
     chel.dates = {};
-    chel.info.forEach(info => {
+    chel.info.forEach((info, index, array) => {
       if (!info.date) return;
       const chelDates = chel.dates[info.date];
+      if(!info.type) {
+        array[index + 1].type = info.date;
+        info.date = null;
+      }
       if (chelDates) {
         chel.dates[info.date].push(info);
       } else {
         chel.dates[info.date] = [info];
       }
     });
+    chel.dates = Object.fromEntries(Object.entries(chel.dates).filter( ([k,v]) => {
+      return k != "null";
+    } ));
     return chel;
   });
   console.log(people.value)
@@ -152,7 +159,6 @@ function formateDate(info: Info[]) {
 
   const allexitsSum = info.filter((inf, index) => index !== 0 && (index % 2 === 0));
   const allNonExist = info.filter((inf, index) => index !== 0 && (index % 2 !== 0));
-  console.log(allNonExist, allNonExist, 'aaaa')
 
 
   let sum = {hours: 0, minutes: 0};
@@ -238,7 +244,6 @@ function getChartOptions(date) {
 }
 
 function getEvents(data) {
-  console.log(data)
   return data.map(d => {
     return {
       status: d.type,
