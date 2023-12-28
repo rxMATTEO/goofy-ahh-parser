@@ -150,14 +150,15 @@ function formateDate(info: Info[]) {
 
   // console.log(info.slice(1, -1), info)
 
-  const allexitsSum = info.slice(0, -1).filter(inf => inf.type !== 'ВХОД');
-  const allNonExist = info.slice(1).filter(inf => inf.type === 'ВХОД');
+  const allexitsSum = info.filter((inf, index) => index !== 0 && (index % 2 === 0));
+  const allNonExist = info.filter((inf, index) => index !== 0 && (index % 2 !== 0));
+  console.log(allNonExist, allNonExist, 'aaaa')
 
 
   let sum = {hours: 0, minutes: 0};
   for (let i = 0; i < allNonExist.length; i++) {
     if (!allexitsSum[i] || !allNonExist[i]) break;
-    const {hours, minutes} = getResultFromDate(getDate(allNonExist[i].time) - getDate(allexitsSum[i].time));
+    const {hours, minutes} = getResultFromDate(getDate(allexitsSum[i].time) - getDate(allNonExist[i].time));
     sum.minutes += minutes;
     sum.hours += hours;
   }
