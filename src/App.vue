@@ -237,6 +237,10 @@ const setChartOptions = () => {
 
 function getChartOptions(date) {
   const actualData = (formateDate(date));
+  if(actualData.notExisted.hours === 0 && actualData.notExisted.minutes === 0) {
+    return [actualData.worked.split(':')[0] * 60 + +actualData.worked.split(':')[1], 0];
+
+  }
   if (actualData.worked && actualData.notExisted) {
     return [+actualData.worked.split('')[0] * 60 + +actualData.worked.split('')[2], actualData.notExisted.hours * 60 + actualData.notExisted.minutes];
   }
