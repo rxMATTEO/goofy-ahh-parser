@@ -157,14 +157,17 @@ function formateDate(info: Info[]) {
 
   // console.log(info.slice(1, -1), info)
 
-  const allexitsSum = info.filter((inf, index) => index !== 0 && (index % 2 === 0));
+  const allexitsSum = info.filter((inf, index) => (index % 2 === 0) );
   const allNonExist = info.filter((inf, index) => index !== 0 && (index % 2 !== 0));
 
-
   let sum = {hours: 0, minutes: 0};
-  for (let i = 0; i < allNonExist.length; i++) {
-    if (!allexitsSum[i] || !allNonExist[i]) break;
-    const {hours, minutes} = getResultFromDate(getDate(allexitsSum[i].time) - getDate(allNonExist[i].time));
+  const allExistLookup = allexitsSum.slice(1);
+  const allNonExistLookup = allNonExist.slice(0, -1);
+  for (let i = 0; i < allExistLookup.length; i++) {
+    if (!allExistLookup[i] || !allNonExistLookup[i]) break;
+    if(allExistLookup[i].date === '2023.04.16'){
+    }
+    const {hours, minutes} = getResultFromDate(getDate(allExistLookup[i].time) - getDate(allNonExistLookup[i].time));
     sum.minutes += minutes;
     sum.hours += hours;
   }
@@ -176,7 +179,7 @@ function formateDate(info: Info[]) {
     enter: firstEnter,
     exit: lastExit,
     worked: getResultFromDate(difference).str,
-    late: getResultFromDate(getDate(firstEnter) - getDate("9:00")).str,
+    late: getResultFromDate(getDate(firstEnter) - getDate("9:00")),
     overworked: getResultFromDate(getDate(lastExit) - getDate("18:00")).str,
     notExisted: sum
   };
@@ -192,7 +195,8 @@ function getResultFromDate(date: string) {
   return {
     hours,
     minutes,
-    str: `${hours}:${minutes}`
+    str: `${hours}:${minutes}`,
+    positiveStr: `${hours * - 1}:${minutes * - 1}`
   };
 }
 
@@ -242,7 +246,8 @@ function getChartOptions(date) {
 
   }
   if (actualData.worked && actualData.notExisted) {
-    return [+actualData.worked.split('')[0] * 60 + +actualData.worked.split('')[2], actualData.notExisted.hours * 60 + actualData.notExisted.minutes];
+    return [+actualData.worked.split(':')[0] * 60 + +actualData.worked.split(':')[1],
+      actualData.notExisted.hours * 60 + actualData.notExisted.minutes];
   }
   return [1000, 0];
 }
@@ -315,7 +320,8 @@ function getEvents(data) {
             <div class="flex justify-content-between">
               <p>Вошел: {{ formateDate(data).enter }}</p>
               <p>Вышел: {{ formateDate(data).exit }}</p>
-              <p>Опоздал: {{ formateDate(data).late }}</p>
+              <p v-if="formateDate(data).late.hours > 0 || formateDate(data).late.minutes > 0">Опоздал: {{ formateDate(data).late.str }}</p>
+              <p v-else>Пришел раньше: {{ formateDate(data).late.positiveStr }}</p>
               <p>Работал: {{ formateDate(data).worked }}</p>
               <p v-if="formateDate(data).notExisted">Отсутствовал:
                 {{ `${formateDate(data).notExisted.hours} часов ${formateDate(data).notExisted.minutes} минут` }}</p>
