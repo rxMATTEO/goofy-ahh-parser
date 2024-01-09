@@ -77,7 +77,7 @@ onMounted(async () => {
     chel.info.forEach((info, index, array) => {
       if (!info.date) return;
       const chelDates = chel.dates[info.date];
-      if(!info.type) {
+      if (!info.type) {
         array[index + 1].type = info.date;
         info.date = null;
       }
@@ -87,9 +87,9 @@ onMounted(async () => {
         chel.dates[info.date] = [info];
       }
     });
-    chel.dates = Object.fromEntries(Object.entries(chel.dates).filter( ([k,v]) => {
+    chel.dates = Object.fromEntries(Object.entries(chel.dates).filter(([k, v]) => {
       return k != "null";
-    } ));
+    }));
     return chel;
   });
   console.log(people.value)
@@ -157,7 +157,7 @@ function formateDate(info: Info[]) {
 
   // console.log(info.slice(1, -1), info)
 
-  const allexitsSum = info.filter((inf, index) => (index % 2 === 0) );
+  const allexitsSum = info.filter((inf, index) => (index % 2 === 0));
   const allNonExist = info.filter((inf, index) => index !== 0 && (index % 2 !== 0));
 
   let sum = {hours: 0, minutes: 0};
@@ -165,7 +165,7 @@ function formateDate(info: Info[]) {
   const allNonExistLookup = allNonExist.slice(0, -1);
   for (let i = 0; i < allExistLookup.length; i++) {
     if (!allExistLookup[i] || !allNonExistLookup[i]) break;
-    if(allExistLookup[i].date === '2023.04.16'){
+    if (allExistLookup[i].date === '2023.04.16') {
     }
     const {hours, minutes} = getResultFromDate(getDate(allExistLookup[i].time) - getDate(allNonExistLookup[i].time));
     sum.minutes += minutes;
@@ -196,7 +196,7 @@ function getResultFromDate(date: string) {
     hours,
     minutes,
     str: `${hours}:${minutes}`,
-    positiveStr: `${hours * - 1}:${minutes * - 1}`
+    positiveStr: `${hours * -1}:${minutes * -1}`
   };
 }
 
@@ -241,7 +241,7 @@ const setChartOptions = () => {
 
 function getChartOptions(date) {
   const actualData = (formateDate(date));
-  if(actualData.notExisted.hours === 0 && actualData.notExisted.minutes === 0) {
+  if (actualData.notExisted.hours === 0 && actualData.notExisted.minutes === 0) {
     return [actualData.worked.split(':')[0] * 60 + +actualData.worked.split(':')[1], 0];
 
   }
@@ -285,7 +285,7 @@ function getEvents(data) {
     </div>
   </div>
 
-  <DataTable v-model:filters="filters" v-model:expandedRows="expandedPeople"
+  <DataTable v-model:filters="filters" v-model:expandedRows="expandedPeople" tableStyle="max-width: 100vw"
              :value="people" paginator :rows="10" removableSort
              :rowsPerPageOptions="rowsPerPage" :loading="!people" showGridlines
              :filterDisplay="'row'" :globalFilterFields="['firstName', 'lastName', 'middleName']"
@@ -300,6 +300,7 @@ function getEvents(data) {
         <Button text icon="pi pi-minus" label="Свернуть все" @click="collapseAll"/>
       </div>
     </template>
+
     <Column expander style="width: 5rem"/>
     <Column v-for="[k,v] in Object.entries(columns)" :header="v" :field="k" sortable :key="k"
             :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
@@ -314,21 +315,24 @@ function getEvents(data) {
     </Column>
 
     <template #expansion="{ data: {info,dates} }">
-      <div>
-        <Tabview>
-          <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date">
-            <div class="flex justify-content-between">
-              <p>Вошел: {{ formateDate(data).enter }}</p>
-              <p>Вышел: {{ formateDate(data).exit }}</p>
-              <p v-if="formateDate(data).late.hours > 0 || formateDate(data).late.minutes > 0">Опоздал: {{ formateDate(data).late.str }}</p>
-              <p v-else>Пришел раньше: {{ formateDate(data).late.positiveStr }}</p>
-              <p>Работал: {{ formateDate(data).worked }}</p>
-              <p v-if="formateDate(data).notExisted">Отсутствовал:
-                {{ `${formateDate(data).notExisted.hours} часов ${formateDate(data).notExisted.minutes} минут` }}</p>
-              <p v-else>Не выходил</p>
+      <Tabview :scrollable="true" style="width: 95vw" :pt="{
+        nextButton: 'bg-primary',
+        previousButton: 'bg-primary',
+      }">
+        <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date" contentStyle="width: 95vw">
+          <div class="flex justify-content-between">
+            <p>Вошел: {{ formateDate(data).enter }}</p>
+            <p>Вышел: {{ formateDate(data).exit }}</p>
+            <p v-if="formateDate(data).late.hours > 0 || formateDate(data).late.minutes > 0">Опоздал:
+              {{ formateDate(data).late.str }}</p>
+            <p v-else>Пришел раньше: {{ formateDate(data).late.positiveStr }}</p>
+            <p>Работал: {{ formateDate(data).worked }}</p>
+            <p v-if="formateDate(data).notExisted">Отсутствовал:
+              {{ `${formateDate(data).notExisted.hours} часов ${formateDate(data).notExisted.minutes} минут` }}</p>
+            <p v-else>Не выходил</p>
 
-              <div class="card flex justify-content-center">
-                <Chart type="pie" :data="{
+            <div class="card flex justify-content-center">
+              <Chart type="pie" :data="{
                   labels: ['Работал (минут)', 'Отсутствовал (минут)'],
                   datasets: [
                       {
@@ -338,51 +342,50 @@ function getEvents(data) {
                       }
                       ]
                 }" :options="chartOptions" class="w-full md:w-30rem"/>
-              </div>
             </div>
+          </div>
 
-            <Timeline :value="getEvents(data)" align="alternate" class="customized-timeline">
-              <template #marker="slotProps">
+          <Timeline :value="getEvents(data)" align="alternate" class="customized-timeline">
+            <template #marker="slotProps">
                 <span
                     class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
                     :style="{ backgroundColor: slotProps.item.color }">
                     <i :class="slotProps.item.icon"></i>
                 </span>
-              </template>
-              <template #content="slotProps">
-                <Card class="mt-3 surface-200">
-                  <template #title>
-                    {{ slotProps.item.status }}
-                  </template>
-                  <template #subtitle>
-                    {{ slotProps.item.date }}
-                  </template>
-                  <template #content>
-                    <!--                    <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-1" />-->
-                    <p v-for="[k,v] in Object.entries(slotProps.item.rest)">
-                      {{ v }}
-                    </p>
+            </template>
+            <template #content="slotProps">
+              <Card class="mt-3 surface-200">
+                <template #title>
+                  {{ slotProps.item.status }}
+                </template>
+                <template #subtitle>
+                  {{ slotProps.item.date }}
+                </template>
+                <template #content>
+                  <!--                    <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-1" />-->
+                  <p v-for="[k,v] in Object.entries(slotProps.item.rest)">
+                    {{ v }}
+                  </p>
 
-                    <!--                    <Button label="Read more" text></Button>-->
-                  </template>
-                </Card>
-              </template>
-            </Timeline>
+                  <!--                    <Button label="Read more" text></Button>-->
+                </template>
+              </Card>
+            </template>
+          </Timeline>
 
-            <div class="mt-5">
-              Все события по текущей дате:
-              <div v-for="infoItem in info.filter(i => i.date === date)">
-                <p v-for="[k,v] in Object.entries(infoItem)">
-                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
-                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
-                  <span v-else>{{ v }}</span>
-                </p>
-                <Divider/>
-              </div>
+          <div class="mt-5">
+            Все события по текущей дате:
+            <div v-for="infoItem in info.filter(i => i.date === date)">
+              <p v-for="[k,v] in Object.entries(infoItem)">
+                <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
+                <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
+                <span v-else>{{ v }}</span>
+              </p>
+              <Divider/>
             </div>
-          </Tabpanel>
-        </Tabview>
-      </div>
+          </div>
+        </Tabpanel>
+      </Tabview>
     </template>
   </DataTable>
 </template>
