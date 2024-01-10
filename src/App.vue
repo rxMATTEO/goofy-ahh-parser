@@ -3,8 +3,8 @@ import axios from "axios";
 import {computed, onMounted, Ref, ref} from "vue";
 import {FilterMatchMode} from "primevue/api";
 
-type PersonInfo = {
-  event: string[]
+type DateInfo = {
+  [k in string]: Info[]
 }
 
 type Info = {
@@ -26,7 +26,7 @@ type Person = {
   rows: string[]
   info: Info[]
   dates: {
-    [k in string]: Info[]
+    DateInfo
   }
 }
 
@@ -165,8 +165,6 @@ function formateDate(info: Info[]) {
   const allNonExistLookup = allNonExist.slice(0, -1);
   for (let i = 0; i < allExistLookup.length; i++) {
     if (!allExistLookup[i] || !allNonExistLookup[i]) break;
-    if (allExistLookup[i].date === '2023.04.16') {
-    }
     const {hours, minutes} = getResultFromDate(getDate(allExistLookup[i].time) - getDate(allNonExistLookup[i].time));
     sum.minutes += minutes;
     sum.hours += hours;
@@ -178,11 +176,52 @@ function formateDate(info: Info[]) {
     // allTime: result,
     enter: firstEnter,
     exit: lastExit,
-    worked: getResultFromDate(difference).str,
+    worked: getResultFromDate(difference),
     late: getResultFromDate(getDate(firstEnter) - getDate("9:00")),
-    overworked: getResultFromDate(getDate(lastExit) - getDate("18:00")).str,
+    overworked: getResultFromDate(getDate(lastExit) - getDate("18:00")),
     notExisted: sum
   };
+}
+
+function getStatsForAll(dates: Info[]) {
+  const val = Object.entries(dates).map(([date, data]) => formateDate(data)).reduce((previousValue, currentValue, currentIndex, array) => {
+    return {
+      ...previousValue,
+      worked: {
+        hours: (+previousValue.worked.hours) + (+currentValue.worked.hours),
+        minutes: (+previousValue.worked.minutes) + (+currentValue.worked.minutes),
+        str: (+previousValue.worked.hours) + (+currentValue.worked.hours) + ':' + (+previousValue.worked.minutes) + (+currentValue.worked.minutes)
+      },
+      notExisted: {
+        hours: (+previousValue.notExisted.hours) + (+currentValue.notExisted.hours),
+        minutes: (+previousValue.notExisted.minutes) + (+currentValue.notExisted.minutes),
+        str: (+previousValue.notExisted.hours) + (+currentValue.notExisted.hours) + ":" + (+previousValue.notExisted.minutes) + (+currentValue.notExisted.minutes)
+      },
+      late: {
+        hours: (+previousValue.late.hours) + (+currentValue.late.hours),
+        minutes: (+previousValue.late.minutes) + (+currentValue.late.minutes),
+        str: (+previousValue.late.hours) + (+currentValue.late.hours) + ":" + (+previousValue.late.minutes) + (+currentValue.late.minutes)
+      },
+      overworked: {
+        hours: (+previousValue.overworked.hours) + (+currentValue.overworked.hours),
+        minutes: (+previousValue.overworked.minutes) + (+currentValue.overworked.minutes),
+        str: (+previousValue.overworked.hours) + (+currentValue.overworked.hours) + ":" + (+previousValue.overworked.minutes) + (+currentValue.overworked.minutes)
+      }
+    };
+  });
+  val.worked.minutes += val.worked.hours * 60;
+  val.worked.hours = val.worked.minutes / 60;
+
+  val.late.minutes += val.late.hours * 60;
+  val.late.hours = val.late.minutes / 60;
+
+  val.notExisted.minutes += val.notExisted.hours * 60;
+  val.notExisted.hours = val.notExisted.minutes / 60;
+
+  val.notExisted.minutes = val.late.minutes = val.worked.minutes = 0;
+
+  val.late.positiveStr = val.late.hours * -1;
+  return val;
 }
 
 function getDate(date: string) {
@@ -190,8 +229,8 @@ function getDate(date: string) {
 }
 
 function getResultFromDate(date: string) {
-  let hours = Math.floor((date % 86400000) / 3600000);
-  let minutes = Math.round(((date % 86400000) % 3600000) / 60000);
+  const hours = Math.floor((date % 86400000) / 3600000);
+  const minutes = Math.round(((date % 86400000) % 3600000) / 60000);
   return {
     hours,
     minutes,
@@ -240,14 +279,13 @@ const setChartOptions = () => {
 };
 
 function getChartOptions(date) {
-  const actualData = (formateDate(date));
-  if (actualData.notExisted.hours === 0 && actualData.notExisted.minutes === 0) {
-    return [actualData.worked.split(':')[0] * 60 + +actualData.worked.split(':')[1], 0];
+  if (date.notExisted.hours === 0 && date.notExisted.minutes === 0) {
+    return [(date.worked.hours * 60) + +date.worked.minutes, 0]; // todo genius
 
   }
-  if (actualData.worked && actualData.notExisted) {
-    return [+actualData.worked.split(':')[0] * 60 + +actualData.worked.split(':')[1],
-      actualData.notExisted.hours * 60 + actualData.notExisted.minutes];
+  if (date.worked && date.notExisted) {
+    return [+date.worked.hours * 60 + +date.worked.minutes,
+      date.notExisted.hours * 60 + date.notExisted.minutes];
   }
   return [1000, 0];
 }
@@ -291,8 +329,9 @@ function getEvents(data) {
              :filterDisplay="'row'" :globalFilterFields="['firstName', 'lastName', 'middleName']"
   >
     <template #header>
-      <div class="flex justify-content-end">
-            <span class="p-input-icon-left">
+      <div class="flex justify-content-end align-items-center gap-2">
+        Глобальный поиск:
+        <span class="p-input-icon-left">
                 <i class="pi pi-search"/>
                 <InputText v-model="filters['global'].value" placeholder="Поиск"/>
             </span>
@@ -319,6 +358,33 @@ function getEvents(data) {
         nextButton: 'bg-primary',
         previousButton: 'bg-primary',
       }">
+        <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">
+          {{ getStatsForAll(dates) }}
+          <div class="flex justify-content-between">
+            <p v-if="getStatsForAll(dates).late.hours > 0 || getStatsForAll(dates).late.minutes > 0">Опоздал:
+              {{ getStatsForAll(dates).late }}</p>
+            <p v-else>Пришел раньше: {{ getStatsForAll(dates).late }}</p>
+            <p>Работал: {{ getStatsForAll(dates).worked }}</p>
+            <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:
+              {{
+                `${getStatsForAll(dates).notExisted.hours} часов ${getStatsForAll(dates).notExisted.minutes} минут`
+              }}</p>
+            <p v-else>Не выходил</p>
+
+            <div class="card flex justify-content-center">
+              <Chart type="pie" :data="{
+                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],
+                  datasets: [
+                      {
+                        data: getChartOptions(getStatsForAll(dates)),
+                        backgroundColor: ['#00FF69FF', '#FF0045FF'],
+                        hoverBackgroundColor: '#00C2FFFF'
+                      }
+                      ]
+                }" :options="chartOptions" class="w-full md:w-30rem"/>
+            </div>
+          </div>
+        </Tabpanel>
         <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date" contentStyle="width: 95vw">
           <div class="flex justify-content-between">
             <p>Вошел: {{ formateDate(data).enter }}</p>
@@ -336,7 +402,7 @@ function getEvents(data) {
                   labels: ['Работал (минут)', 'Отсутствовал (минут)'],
                   datasets: [
                       {
-                        data: getChartOptions(data),
+                        data: getChartOptions(formateDate(data)),
                         backgroundColor: ['#00FF69FF', '#FF0045FF'],
                         hoverBackgroundColor: '#00C2FFFF'
                       }
