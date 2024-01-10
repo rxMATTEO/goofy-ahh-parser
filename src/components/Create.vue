@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {useToast} from "primevue/usetoast";
-import {ref} from "vue";
+import {inject, ref} from "vue";
 import {usePrimeVue} from "primevue/config";
 import axios from "axios";
 
 const toast = useToast();
+const api = inject('apiUrl');
 
 const totalSize = ref(0);
 const totalSizePercent = ref(0);
@@ -22,7 +23,10 @@ const onSelectedFiles = (event) => {
   files.value.forEach((file) => {
     totalSize.value += parseInt(formatSize(file.size));
   });
-  axios.post();
+  console.log(files.value)
+  axios.post(`${api}/create`, {
+    files: files.value,
+  });
 };
 
 const uploadEvent = (callback) => {
@@ -52,8 +56,8 @@ const formatSize = (bytes) => {
 <template>
   <Button class="absolute right-0" @click="$router.go(-1)">Назад</Button>
   <div class="card w-8 m-auto">
-    <Toast />
-    <FileUpload name="demo[]" url="/api/upload" @upload="onTemplatedUpload($event)" :multiple="false" accept=".rtf"
+    <Toast/>
+    <FileUpload name="demo[]" :url="`${api}/create`" @upload="onTemplatedUpload($event)" :multiple="false" accept=".rtf"
                 :maxFileSize="1000000" @select="onSelectedFiles" :auto="true"
                 invalidFileTypeMessage="{0} - не rtf документ">
       <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
@@ -66,9 +70,9 @@ const formatSize = (bytes) => {
                     :disabled="!files || files.length === 0"></Button>
           </div>
           <ProgressBar :value="totalSizePercent" :showValue="false"
-                       :class="['md:w-20rem h-1rem w-full md:ml-auto', { 'exceeded-progress-bar': totalSizePercent > 100 }]"
-          ><span class="white-space-nowrap">{{ totalSize }}B / 1Mb</span></ProgressBar
-          >
+                       :class="['md:w-20rem h-1rem w-full md:ml-auto', { 'exceeded-progress-bar': totalSizePercent > 100 }]">
+            <span class="white-space-nowrap">{{ totalSize }}B / 1Mb</span>
+          </ProgressBar>
         </div>
       </template>
       <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">

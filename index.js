@@ -5,6 +5,7 @@ const app = express();
 const jsdom = require("jsdom");
 
 app.use(cors());
+app.use(express.json())
 
 function parseInfo(htmlString) {
   const parser = new jsdom.JSDOM(htmlString);
@@ -110,7 +111,8 @@ app.get('/', async function (req, res) {
 });
 
 app.post('/create', async function (req, res) {
-  const { file } = req.body;
+  console.log(req.file);
+  res.send('ok');
 });
 console.log('listening on port 3001');
 app.listen(3001);
