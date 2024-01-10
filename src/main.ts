@@ -14,6 +14,8 @@ import TabPanel from "primevue/tabpanel";
 import Chart from "primevue/chart";
 import Timeline from "primevue/timeline";
 import Card from "primevue/card";
+import Accordion from "primevue/accordion";
+import AccordionTab from "primevue/accordiontab";
 
 const app = createApp(App);
 app.use(PrimeVue, {ripple: true});
@@ -27,4 +29,6 @@ app.component('Tabpanel', TabPanel);
 app.component('Chart', Chart);
 app.component('Timeline', Timeline);
 app.component('Card', Card);
+app.component('Accordion', Accordion);
+app.component('AccordionTab', AccordionTab);
 app.mount('#app');

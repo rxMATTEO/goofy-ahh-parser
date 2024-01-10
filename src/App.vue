@@ -360,14 +360,15 @@ function getEvents(data) {
       }">
         <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">
           <div class="flex justify-content-between">
-            <p v-if="getStatsForAll(dates).late.hours > 0 || getStatsForAll(dates).late.minutes > 0">Опоздал на:
-              {{ getStatsForAll(dates).late.hours.toFixed(1) }} часов(а)</p>
+            <p v-if="getStatsForAll(dates).late.hours > 0 || getStatsForAll(dates).late.minutes > 0">
+              Опоздал на: {{ getStatsForAll(dates).late.hours.toFixed(1) }} часов(а)</p>
             <p v-else>Пришел раньше на: {{ getStatsForAll(dates).late.hours.toFixed(1) * -1 }} часов(а)</p>
             <p>Работал: {{ getStatsForAll(dates).worked.hours }} часов(а)</p>
             <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:
               {{
                 `${getStatsForAll(dates).notExisted.hours.toFixed(1)} часов`
-              }}</p>
+              }}
+            </p>
             <p v-else>Не выходил</p>
 
             <div class="card flex justify-content-center">
@@ -383,6 +384,26 @@ function getEvents(data) {
                 }" :options="chartOptions" class="w-full md:w-30rem"/>
             </div>
           </div>
+
+          <Accordion :activeIndex="0" class="mt-5">
+            <AccordionTab header="Все события по текущей дате" :pt="{
+              headerAction: {
+                class: 'bg-primary-800'
+              },
+              content: {
+                class: 'surface-100'
+              }
+            }">
+              <div v-for="infoItem in info">
+                <p v-for="[k,v] in Object.entries(infoItem)">
+                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
+                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
+                  <span v-else>{{ v }}</span>
+                </p>
+                <Divider/>
+              </div>
+            </AccordionTab>
+          </Accordion>
         </Tabpanel>
         <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date" contentStyle="width: 95vw">
           <div class="flex justify-content-between">
@@ -438,17 +459,25 @@ function getEvents(data) {
             </template>
           </Timeline>
 
-          <div class="mt-5">
-            Все события по текущей дате:
-            <div v-for="infoItem in info.filter(i => i.date === date)">
-              <p v-for="[k,v] in Object.entries(infoItem)">
-                <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
-                <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
-                <span v-else>{{ v }}</span>
-              </p>
-              <Divider/>
-            </div>
-          </div>
+          <Accordion :activeIndex="0" class="mt-5">
+            <AccordionTab header="Все события по текущей дате" :pt="{
+              headerAction: {
+                class: 'bg-primary-800'
+              },
+              content: {
+                class: 'surface-100'
+              }
+            }">
+              <div v-for="infoItem in info.filter(i => i.date === date)">
+                <p v-for="[k,v] in Object.entries(infoItem)">
+                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
+                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
+                  <span v-else>{{ v }}</span>
+                </p>
+                <Divider/>
+              </div>
+            </AccordionTab>
+          </Accordion>
         </Tabpanel>
       </Tabview>
     </template>
