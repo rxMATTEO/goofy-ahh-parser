@@ -2,6 +2,8 @@
 import axios from "axios";
 import {computed, onMounted, Ref, ref} from "vue";
 import {FilterMatchMode} from "primevue/api";
+import {useConfirm} from "primevue/useconfirm";
+import {useRouter} from "vue-router";
 
 type DateInfo = {
   [k in string]: Info[]
@@ -34,6 +36,7 @@ const body = ref(null);
 const info = ref(null);
 const people: Ref<Person[] | null> = ref(null);
 const error = ref(null);
+const confirm = useConfirm();
 
 const api = 'http://localhost:3001';
 
@@ -305,9 +308,22 @@ function getEvents(data) {
 //   return new Date(0, 0, 0, date.split(':')[0], date.split(':')[1]).toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
 // }
 
+const router = useRouter();
+
 function transformDataToHuman(data) {
   return `${Math.abs(data.hours)} часов ${Math.abs(data.minutes)} минут`;
 }
+
+const confirmUploadNew = (event) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: 'После загрузки нового документа, текущие данные будут перезаписаны. <br> Ты точно хочешь продолжить?',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      router.push('/create');
+    },
+  });
+};
 </script>
 
 <template>
@@ -315,7 +331,7 @@ function transformDataToHuman(data) {
     <div v-if="error">
       {{ error }}
     </div>
-    <div v-if="info" class="flex justify-content-between">
+    <div v-if="info" class="flex justify-content-between align-items-center">
       <div>
         Тип событий: {{ info.eventsType }}
       </div>
@@ -327,6 +343,17 @@ function transformDataToHuman(data) {
       </div>
       <div>
         Время: {{ info.time }}
+      </div>
+
+      <div>
+        <ConfirmPopup>
+          <template #message="{ message: { message } }">
+            <div class="p-3">
+              <p v-html="message"></p>
+            </div>
+          </template>
+        </ConfirmPopup>
+        <Button @click="confirmUploadNew($event)">Загрузить другой документ</Button>
       </div>
     </div>
   </div>

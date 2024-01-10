@@ -48,7 +48,7 @@ const formatSize = (bytes) => {
 </script>
 
 <template>
-  <div class="card">
+  <div class="card w-8 m-auto">
     <Toast/>
     <FileUpload name="demo[]" url="/api/upload" @upload="onTemplatedUpload($event)" :multiple="false" accept=".rtf"
                 :maxFileSize="1000000" @select="onSelectedFiles" :auto="true"

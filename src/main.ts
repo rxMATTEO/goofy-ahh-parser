@@ -17,12 +17,15 @@ import Card from "primevue/card";
 import Accordion from "primevue/accordion";
 import AccordionTab from "primevue/accordiontab";
 import ToastService from 'primevue/toastservice';
+import ConfirmationService from 'primevue/confirmationservice';
 import {createRouter, createWebHistory} from "vue-router";
 import routes from "./routes.ts";
 import Toast from "primevue/toast";
 import ProgressBar from "primevue/progressbar";
 import Badge from "primevue/badge";
 import FileUpload from "primevue/fileupload";
+import Tooltip from "primevue/tooltip";
+import ConfirmPopup from "primevue/confirmpopup";
 
 const router = createRouter({
   routes,
@@ -32,6 +35,7 @@ const router = createRouter({
 const app = createApp(App);
 app.use(router);
 app.use(ToastService);
+app.use(ConfirmationService);
 app.use(PrimeVue, {ripple: true});
 app.component('DataTable', DataTable);
 app.component('Column', Column);
@@ -49,4 +53,6 @@ app.component('Toast', Toast);
 app.component('ProgressBar', ProgressBar);
 app.component('Badge', Badge);
 app.component('FileUpload', FileUpload);
+app.component('ConfirmPopup', ConfirmPopup);
+app.directive('tooltip', Tooltip);
 app.mount('#app');
