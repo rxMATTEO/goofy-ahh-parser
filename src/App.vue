@@ -300,6 +300,14 @@ function getEvents(data) {
     }
   })
 }
+
+// function transformIntoTwoDigits(date){
+//   return new Date(0, 0, 0, date.split(':')[0], date.split(':')[1]).toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
+// }
+
+function transformDataToHuman(data){
+  return `${Math.abs(data.hours)} часов ${Math.abs(data.minutes)} минут`;
+}
 </script>
 
 <template>
@@ -363,10 +371,10 @@ function getEvents(data) {
             <p v-if="getStatsForAll(dates).late.hours > 0 || getStatsForAll(dates).late.minutes > 0">
               Опоздал на: {{ getStatsForAll(dates).late.hours.toFixed(1) }} часов(а)</p>
             <p v-else>Пришел раньше на: {{ getStatsForAll(dates).late.hours.toFixed(1) * -1 }} часов(а)</p>
-            <p>Работал: {{ getStatsForAll(dates).worked.hours }} часов(а)</p>
+            <p>Работал: {{ getStatsForAll(dates).worked.hours.toFixed(1) }} часов(а)</p>
             <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:
               {{
-                `${getStatsForAll(dates).notExisted.hours.toFixed(1)} часов`
+                `${getStatsForAll(dates).notExisted.hours.toFixed(1)} часов(а)`
               }}
             </p>
             <p v-else>Не выходил</p>
@@ -385,7 +393,7 @@ function getEvents(data) {
             </div>
           </div>
 
-          <Accordion :activeIndex="0" class="mt-5">
+          <Accordion :activeIndex="-1" class="mt-5">
             <AccordionTab header="Все события по текущей дате" :pt="{
               headerAction: {
                 class: 'bg-primary-800'
@@ -409,10 +417,10 @@ function getEvents(data) {
           <div class="flex justify-content-between">
             <p>Вошел: {{ formateDate(data).enter }}</p>
             <p>Вышел: {{ formateDate(data).exit }}</p>
-            <p v-if="formateDate(data).late.hours > 0 || formateDate(data).late.minutes > 0">Опоздал:
-              {{ formateDate(data).late.str }}</p>
-            <p v-else>Пришел раньше: {{ formateDate(data).late.positiveStr }}</p>
-            <p>Работал: {{ formateDate(data).worked }}</p>
+            <p v-if="formateDate(data).late.hours > 0 || formateDate(data).late.minutes > 0">Опоздал на:
+              {{ transformDataToHuman(formateDate(data).late) }}</p>
+            <p v-else>Пришел раньше на: {{ transformDataToHuman(formateDate(data).late) }}</p>
+            <p>Работал: {{ transformDataToHuman(formateDate(data).worked) }}</p>
             <p v-if="formateDate(data).notExisted">Отсутствовал:
               {{ `${formateDate(data).notExisted.hours} часов ${formateDate(data).notExisted.minutes} минут` }}</p>
             <p v-else>Не выходил</p>
@@ -459,7 +467,7 @@ function getEvents(data) {
             </template>
           </Timeline>
 
-          <Accordion :activeIndex="0" class="mt-5">
+          <Accordion :activeIndex="-1" class="mt-5">
             <AccordionTab header="Все события по текущей дате" :pt="{
               headerAction: {
                 class: 'bg-primary-800'
