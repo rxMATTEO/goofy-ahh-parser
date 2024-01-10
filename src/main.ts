@@ -16,8 +16,22 @@ import Timeline from "primevue/timeline";
 import Card from "primevue/card";
 import Accordion from "primevue/accordion";
 import AccordionTab from "primevue/accordiontab";
+import ToastService from 'primevue/toastservice';
+import {createRouter, createWebHistory} from "vue-router";
+import routes from "./routes.ts";
+import Toast from "primevue/toast";
+import ProgressBar from "primevue/progressbar";
+import Badge from "primevue/badge";
+import FileUpload from "primevue/fileupload";
+
+const router = createRouter({
+  routes,
+  history: createWebHistory()
+})
 
 const app = createApp(App);
+app.use(router);
+app.use(ToastService);
 app.use(PrimeVue, {ripple: true});
 app.component('DataTable', DataTable);
 app.component('Column', Column);
@@ -31,4 +45,8 @@ app.component('Timeline', Timeline);
 app.component('Card', Card);
 app.component('Accordion', Accordion);
 app.component('AccordionTab', AccordionTab);
+app.component('Toast', Toast);
+app.component('ProgressBar', ProgressBar);
+app.component('Badge', Badge);
+app.component('FileUpload', FileUpload);
 app.mount('#app');
