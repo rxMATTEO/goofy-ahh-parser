@@ -8,17 +8,12 @@ const toast = useToast();
 const totalSize = ref(0);
 const totalSizePercent = ref(0);
 const files = ref([]);
+const {config: {locale: {fileSizeTypes}}} = usePrimeVue();
 
 const onRemoveTemplatingFile = (file, removeFileCallback, index) => {
   removeFileCallback(index);
   totalSize.value -= parseInt(formatSize(file.size));
   totalSizePercent.value = totalSize.value / 10;
-};
-
-const onClearTemplatingUpload = (clear) => {
-  clear();
-  totalSize.value = 0;
-  totalSizePercent.value = 0;
 };
 
 const onSelectedFiles = (event) => {
@@ -34,9 +29,8 @@ const uploadEvent = (callback) => {
 };
 
 const onTemplatedUpload = () => {
-  toast.add({severity: "info", summary: "Success", detail: "Файл загружен", life: 3000});
+  toast.add({severity: "info", summary: "Ура!", detail: "Файл загружен", life: 3000});
 };
-const {config: {locale: {fileSizeTypes}}} = usePrimeVue();
 const formatSize = (bytes) => {
   const k = 1024;
   const dm = 3;
@@ -57,7 +51,8 @@ const formatSize = (bytes) => {
   <div class="card">
     <Toast/>
     <FileUpload name="demo[]" url="/api/upload" @upload="onTemplatedUpload($event)" :multiple="false" accept=".rtf"
-                :maxFileSize="1000000" @select="onSelectedFiles" :auto="true" invalidFileTypeMessage="{0} - не rtf документ">
+                :maxFileSize="1000000" @select="onSelectedFiles" :auto="true"
+                invalidFileTypeMessage="{0} - не rtf документ">
       <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
         <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
           <div class="flex gap-2">
@@ -93,17 +88,17 @@ const formatSize = (bytes) => {
         </div>
 
         <div v-if="uploadedFiles.length > 0">
-          <h5>Completed</h5>
+          <h5>Успешно загружены:</h5>
           <div class="flex flex-wrap p-0 sm:p-5 gap-5">
             <div v-for="(file, index) of uploadedFiles" :key="file.name + file.type + file.size"
-                 class="card m-0 px-6 flex flex-column border-1 surface-border align-items-center gap-3">
+                 class="card m-0 px-6 py-2 flex flex-column border-1 surface-border align-items-center gap-3">
               <div>
-                <img role="presentation" :alt="file.name" :src="file.objectURL" width="100" height="50"
+                <img role="presentation" :alt="file.name" src="/rtf.png" width="150" height="150"
                      class="shadow-2"/>
               </div>
               <span class="font-semibold">{{ file.name }}</span>
               <div>{{ formatSize(file.size) }}</div>
-              <Badge value="Completed" class="mt-3" severity="success"/>
+              <Badge value="Загружен" class="mt-3" severity="success"/>
               <Button icon="pi pi-times" @click="removeUploadedFileCallback(index)" outlined rounded severity="danger"/>
             </div>
           </div>
