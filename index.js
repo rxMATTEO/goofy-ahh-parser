@@ -108,6 +108,10 @@ app.get('/', async function (req, res) {
   const result = await mammoth.convertToHtml({path: 'ri.docx'});
   res.send(result.value);
 });
+
+app.post('/create', async function (req, res) {
+  const { file } = req.body;
+});
 console.log('listening on port 3001');
 app.listen(3001);
 

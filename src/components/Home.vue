@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from "axios";
-import {computed, onMounted, Ref, ref} from "vue";
+import {computed, inject, onMounted, Ref, ref} from "vue";
 import {FilterMatchMode} from "primevue/api";
 import {useConfirm} from "primevue/useconfirm";
 import {useRouter} from "vue-router";
@@ -38,7 +38,7 @@ const people: Ref<Person[] | null> = ref(null);
 const error = ref(null);
 const confirm = useConfirm();
 
-const api = 'http://localhost:3001';
+const api = inject('apiUrl');
 
 onMounted(async () => {
   try {

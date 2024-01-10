@@ -2,6 +2,7 @@
 import {useToast} from "primevue/usetoast";
 import {ref} from "vue";
 import {usePrimeVue} from "primevue/config";
+import axios from "axios";
 
 const toast = useToast();
 
@@ -21,6 +22,7 @@ const onSelectedFiles = (event) => {
   files.value.forEach((file) => {
     totalSize.value += parseInt(formatSize(file.size));
   });
+  axios.post();
 };
 
 const uploadEvent = (callback) => {
@@ -48,8 +50,9 @@ const formatSize = (bytes) => {
 </script>
 
 <template>
+  <Button class="absolute right-0" @click="$router.go(-1)">Назад</Button>
   <div class="card w-8 m-auto">
-    <Toast/>
+    <Toast />
     <FileUpload name="demo[]" url="/api/upload" @upload="onTemplatedUpload($event)" :multiple="false" accept=".rtf"
                 :maxFileSize="1000000" @select="onSelectedFiles" :auto="true"
                 invalidFileTypeMessage="{0} - не rtf документ">
