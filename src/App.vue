@@ -184,7 +184,7 @@ function formateDate(info: Info[]) {
 }
 
 function getStatsForAll(dates: Info[]) {
-  const val = Object.entries(dates).map(([date, data]) => formateDate(data)).reduce((previousValue, currentValue, currentIndex, array) => {
+  const val = Object.entries(dates).map(([date, data]) => formateDate(data)).reduce((previousValue, currentValue) => {
     return {
       ...previousValue,
       worked: {
@@ -359,15 +359,14 @@ function getEvents(data) {
         previousButton: 'bg-primary',
       }">
         <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">
-          {{ getStatsForAll(dates) }}
           <div class="flex justify-content-between">
-            <p v-if="getStatsForAll(dates).late.hours > 0 || getStatsForAll(dates).late.minutes > 0">Опоздал:
-              {{ getStatsForAll(dates).late }}</p>
-            <p v-else>Пришел раньше: {{ getStatsForAll(dates).late }}</p>
-            <p>Работал: {{ getStatsForAll(dates).worked }}</p>
+            <p v-if="getStatsForAll(dates).late.hours > 0 || getStatsForAll(dates).late.minutes > 0">Опоздал на:
+              {{ getStatsForAll(dates).late.hours.toFixed(1) }} часов(а)</p>
+            <p v-else>Пришел раньше на: {{ getStatsForAll(dates).late.hours.toFixed(1) * -1 }} часов(а)</p>
+            <p>Работал: {{ getStatsForAll(dates).worked.hours }} часов(а)</p>
             <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:
               {{
-                `${getStatsForAll(dates).notExisted.hours} часов ${getStatsForAll(dates).notExisted.minutes} минут`
+                `${getStatsForAll(dates).notExisted.hours.toFixed(1)} часов`
               }}</p>
             <p v-else>Не выходил</p>
 
@@ -429,7 +428,7 @@ function getEvents(data) {
                 </template>
                 <template #content>
                   <!--                    <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-1" />-->
-                  <p v-for="[k,v] in Object.entries(slotProps.item.rest)">
+                  <p v-for="v in Object.values(slotProps.item.rest)">
                     {{ v }}
                   </p>
 
@@ -455,6 +454,3 @@ function getEvents(data) {
     </template>
   </DataTable>
 </template>
-
-<style scoped>
-</style>
