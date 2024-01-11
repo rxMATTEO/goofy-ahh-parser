@@ -2,7 +2,12 @@ const mammoth = require("mammoth");
 const express = require('express');
 const cors = require("cors");
 const app = express();
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 const jsdom = require("jsdom");
+const {writeFileSync} = require("fs");
+const { exec } = require('child_process');
 
 app.use(cors());
 app.use(express.json())
@@ -110,9 +115,34 @@ app.get('/', async function (req, res) {
   res.send(result.value);
 });
 
-app.post('/create', async function (req, res) {
-  console.log(req.file);
-  res.send('ok');
+app.post('/create', upload.single('rtf'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('Где файл? Нету.');
+  }
+  writeFileSync('ri.rtf', req.file.buffer);
+
+  exec('npm run parse', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+    exec('npm run iconv', (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+      res.send('File received!');
+      if (stderr) {
+        console.error(`stderr: ${stderr}`);
+      }
+    });
+
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+    }
+  });
 });
 console.log('listening on port 3001');
 app.listen(3001);

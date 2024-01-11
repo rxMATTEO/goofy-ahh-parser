@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "parse": "npx -p @extensionengine/rtf-parser rtf2txt ri.rtf",
-    "iconv": "iconv -f utf-8 -t windows-1252 \"C:\\Users\\rxMATTEO\\Desktop\\JS PROJECTS\\ria-parser\\ri.txt\" > \"C:\\Users\\rxMATTEO\\Desktop\\JS PROJECTS\\ria-parser\\test.txt\"",
+    "iconv": "iconv -f utf-8 -t windows-1252 \"./ri.txt\" > \"./test.txt\"",
     "server": "nodemon index.js",
     "dev": "vite"
   },
@@ -23,6 +23,7 @@
     "iconv-lite": "^0.6.3",
     "jsdom": "^23.0.1",
     "mammoth": "^1.6.0",
+    "multer": "^1.4.5-lts.1",
     "node-unrtf": "^4.1.2",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
