@@ -133,10 +133,7 @@ app.post('/create', upload.single('rtf'), (req, res) => {
         return;
       }
       console.log(`stdout: ${stdout}`);
-      const readFile = readFileSync('test.txt').toString('cp1251');
-      console.log(readFile)
-      res.writeHead(200, {'Content-Type': 'text/plain; charset=latin1'});
-      res.end(readFile);
+      res.sendFile('./test.txt', {root: '.'});
       if (stderr) {
         console.error(`stderr: ${stderr}`);
       }

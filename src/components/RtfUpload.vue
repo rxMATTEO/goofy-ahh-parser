@@ -2,7 +2,7 @@
 import {useToast} from "primevue/usetoast";
 import {computed, inject, ref} from "vue";
 import {usePrimeVue} from "primevue/config";
-
+import * as windows1252 from 'windows-1252';
 const props = defineProps<{
   stepIndex: number
 }>();
@@ -36,7 +36,8 @@ const uploadEvent = (callback) => {
 };
 
 const onTemplatedUpload = (event) => {
-  console.log(event)
+  const text = event.xhr.response;
+  console.log(windows1252.decode(windows1252.encode(text)))
   toast.add({severity: "info", summary: "Ура!", detail: "Файл загружен", life: 3000});
   emit('update:stepIndex', props.stepIndex + 1);
 };
