@@ -6,7 +6,7 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const jsdom = require("jsdom");
-const {writeFileSync} = require("fs");
+const {writeFileSync, readFileSync} = require("fs");
 const { exec } = require('child_process');
 
 app.use(cors());
@@ -133,7 +133,10 @@ app.post('/create', upload.single('rtf'), (req, res) => {
         return;
       }
       console.log(`stdout: ${stdout}`);
-      res.send('File received!');
+      const readFile = readFileSync('test.txt').toString('cp1251');
+      console.log(readFile)
+      res.writeHead(200, {'Content-Type': 'text/plain; charset=latin1'});
+      res.end(readFile);
       if (stderr) {
         console.error(`stderr: ${stderr}`);
       }

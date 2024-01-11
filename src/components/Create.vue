@@ -8,7 +8,7 @@ const steps = computed(() => {
       label: 'Загрузка rtf',
     },
     {
-      label: 'Загрузка rtf',
+      label: 'Формирование docx',
     },
     {
       label: 'Загрузка rtf',

@@ -27,6 +27,7 @@ import FileUpload from "primevue/fileupload";
 import Tooltip from "primevue/tooltip";
 import ConfirmPopup from "primevue/confirmpopup";
 import Steps from "primevue/steps";
+import Textarea from "primevue/textarea";
 
 const router = createRouter({
   routes,
@@ -56,5 +57,6 @@ app.component('Badge', Badge);
 app.component('FileUpload', FileUpload);
 app.component('ConfirmPopup', ConfirmPopup);
 app.component('Steps', Steps);
+app.component('Textarea', Textarea);
 app.directive('tooltip', Tooltip);
 app.mount('#app');

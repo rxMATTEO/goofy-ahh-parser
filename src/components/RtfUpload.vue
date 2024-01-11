@@ -35,7 +35,8 @@ const uploadEvent = (callback) => {
   callback();
 };
 
-const onTemplatedUpload = () => {
+const onTemplatedUpload = (event) => {
+  console.log(event)
   toast.add({severity: "info", summary: "Ура!", detail: "Файл загружен", life: 3000});
   emit('update:stepIndex', props.stepIndex + 1);
 };
