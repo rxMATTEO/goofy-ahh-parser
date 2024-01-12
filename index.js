@@ -75,7 +75,6 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
         chel.info.push(infoBlock);
       } else {
         if(!chel.firstName) {
-          console.log(peopleArray)
           const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
           chel.firstName = firstName;
           chel.lastName = lastName;
