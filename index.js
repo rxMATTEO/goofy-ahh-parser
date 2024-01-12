@@ -75,6 +75,7 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
         chel.info.push(infoBlock);
       } else {
         if(!chel.firstName) {
+          console.log(peopleArray)
           const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
           chel.firstName = firstName;
           chel.lastName = lastName;
@@ -101,17 +102,17 @@ function parsePeople(htmlString) {
 }
 
 app.get('/info', async function (req, res) {
-  const result = await mammoth.convertToHtml({path: 'ri.docx'});
+  const result = await mammoth.convertToHtml({path: 'stuff.docx'});
   res.send(parseInfo((result.value)));
 });
 
 app.get('/people', async function (req, res) {
-  const result = await mammoth.convertToHtml({path: 'ri.docx'});
+  const result = await mammoth.convertToHtml({path: 'stuff.docx'});
   res.send(parsePeople((result.value)));
 });
 
 app.get('/', async function (req, res) {
-  const result = await mammoth.convertToHtml({path: 'ri.docx'});
+  const result = await mammoth.convertToHtml({path: 'stuff.docx'});
   res.send(result.value);
 });
 
