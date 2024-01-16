@@ -118,6 +118,11 @@ app.get('/', async function (req, res) {
   res.send(file);
 });
 
+app.get('/robots.txt', function (req, res) {
+  res.type('text/plain');
+  res.send("User-agent: *\nDisallow: /");
+});
+
 app.post('/create', upload.single('rtf'), (req, res) => {
   if (!req.file) {
     return res.status(400).send('Где файл? Нету.');
