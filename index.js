@@ -10,6 +10,7 @@ const {writeFileSync, readFileSync} = require("fs");
 const { exec } = require('child_process');
 
 app.use(cors());
+app.use(express.static('dist'));
 app.use(express.json())
 
 function parseInfo(htmlString) {
@@ -112,7 +113,9 @@ app.get('/people', async function (req, res) {
 
 app.get('/', async function (req, res) {
   const result = await mammoth.convertToHtml({path: 'stuff.docx'});
-  res.send(result.value);
+  const file = readFileSync('dist/index.html');
+  res.header('Content-Type', 'text/html');
+  res.send(file);
 });
 
 app.post('/create', upload.single('rtf'), (req, res) => {
