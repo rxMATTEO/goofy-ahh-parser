@@ -359,7 +359,7 @@ const confirmUploadNew = (event) => {
   </div>
 
   <DataTable v-model:filters="filters" v-model:expandedRows="expandedPeople" tableStyle="max-width: 100vw"
-             :value="people" paginator :rows="10" removableSort
+             :value="people" paginator :rows="people?.length" removableSort
              :rowsPerPageOptions="rowsPerPage" :loading="!people" showGridlines
              :filterDisplay="'row'" :globalFilterFields="['firstName', 'lastName', 'middleName']"
   >
