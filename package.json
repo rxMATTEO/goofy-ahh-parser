@@ -7,7 +7,8 @@
     "parse": "npx -p @extensionengine/rtf-parser rtf2txt ri.rtf",
     "iconv": "iconv -f utf-8 -t windows-1252 \"./ri.txt\" > \"./test.txt\"",
     "server": "nodemon index.js",
-    "dev": "vite"
+    "dev": "vite",
+    "build": "vite build"
   },
   "keywords": [],
   "author": "",
