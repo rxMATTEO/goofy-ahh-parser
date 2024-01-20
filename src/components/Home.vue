@@ -213,18 +213,15 @@ function getStatsForAll(dates: Info[]) {
       }
     };
   });
-  val.worked.minutes += val.worked.hours * 60;
-  val.worked.hours = val.worked.minutes / 60;
-
-  val.late.minutes += val.late.hours * 60;
-  val.late.hours = val.late.minutes / 60;
-
-  val.notExisted.minutes += val.notExisted.hours * 60;
-  val.notExisted.hours = val.notExisted.minutes / 60;
-
-  val.notExisted.minutes = val.late.minutes = val.worked.minutes = 0;
-
-  val.late.positiveStr = val.late.hours * -1;
+  const worked = normilizeDate(convertMinsToHrsMins((val.worked.hours * 60) + val.worked.minutes ));
+  const lateHours = (val.late.hours < 0) ? val.late.hours * -1 : val.late.hours;
+  const lateMinutes = (val.late.minutes < 0) ? val.late.minutes * -1 : val.late.minutes;
+  const late = normilizeDate(convertMinsToHrsMins((lateHours * 60) + lateMinutes ));
+  late.str = (val.late.minutes < 0) || (val.late.hours < 0) ? `Пришел раньше: ${late.hours}:${late.minutes}` : `Опоздал на:${late.hours}:${late.minutes}`;
+  const notExisted = normilizeDate(convertMinsToHrsMins((val.notExisted.hours * 60) + val.notExisted.minutes ));
+  val.worked = worked;
+  val.late = late;
+  val.notExisted = notExisted;
   return val;
 }
 
@@ -302,7 +299,6 @@ const setChartOptions = () => {
 };
 
 function getChartOptions(date) {
-  console.log(date)
   if (date.notExisted.hours === 0 && date.notExisted.minutes === 0) {
     return [(date.worked.hours * 60) + +date.worked.minutes, 0]; // todo genius
 
@@ -416,13 +412,13 @@ const confirmUploadNew = (event) => {
       }">
         <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">
           <div class="flex justify-content-between">
-            <p v-if="getStatsForAll(dates).late.hours > 0 || getStatsForAll(dates).late.minutes > 0">
-              Опоздал на: {{ getStatsForAll(dates).late.hours.toFixed(1) }} часов(а)</p>
-            <p v-else>Пришел раньше на: {{ getStatsForAll(dates).late.hours.toFixed(1) * -1 }} часов(а)</p>
+<!--            todo normilize-->
+            <p>{{ getStatsForAll(dates).late.str }}</p>
             <p>Работал: {{ getStatsForAll(dates).worked.hours.toFixed(1) }} часов(а)</p>
+            {{getStatsForAll(dates).worked}}
             <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:
               {{
-                `${getStatsForAll(dates).notExisted.hours.toFixed(1)} часов(а)`
+                `${getStatsForAll(dates).notExisted.str} часов(а)`
               }}
             </p>
             <p v-else>Не выходил</p>
