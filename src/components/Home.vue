@@ -51,6 +51,7 @@ onMounted(async () => {
       (person: Person) => {
         return {
           ...person,
+          fullName: person.firstName + ' ' + person.lastName + ' ' + person.middleName,
           info: person.info.map(
               ([date, keyLabel, time, exit, type, pass, k]) => {
                 return {
@@ -100,14 +101,14 @@ onMounted(async () => {
 
 const columns = computed(() => {
   return {
-    lastName: 'Фамилия',
-    firstName: 'Имя',
-    middleName: 'Отчество',
+    fullName: 'ФИО',
+    // firstName: 'Имя',
+    // middleName: 'Отчество',
     // page: 'Страница',
     // pageNumber: 'Номер страницы',
     // room: 'Комната',
     // rows: 'Строки',
-    info: 'Информация (входы-выходы)',
+    // info: 'Информация (входы-выходы)',
   };
 });
 
@@ -117,6 +118,7 @@ const rowsPerPage = computed(() => {
 
 const filters = ref({
   global: {value: null, matchMode: FilterMatchMode.CONTAINS},
+  fullName: {value: null, matchMode: FilterMatchMode.CONTAINS},
   firstName: {value: null, matchMode: FilterMatchMode.STARTS_WITH},
   lastName: {value: null, matchMode: FilterMatchMode.STARTS_WITH},
   middleName: {value: null, matchMode: FilterMatchMode.IN},
@@ -386,11 +388,11 @@ const confirmUploadNew = (event) => {
   >
     <template #header>
       <div class="flex justify-content-end align-items-center gap-2">
-        Глобальный поиск:
-        <span class="p-input-icon-left">
-                <i class="pi pi-search"/>
-                <InputText v-model="filters['global'].value" placeholder="Поиск"/>
-            </span>
+<!--        Глобальный поиск:-->
+<!--        <span class="p-input-icon-left">-->
+<!--                <i class="pi pi-search"/>-->
+<!--                <InputText v-model="filters['global'].value" placeholder="Поиск"/>-->
+<!--            </span>-->
         <Button text icon="pi pi-plus" label="Раскрыть все" @click="expandAll"/>
         <Button text icon="pi pi-minus" label="Свернуть все" @click="collapseAll"/>
       </div>
@@ -403,10 +405,10 @@ const confirmUploadNew = (event) => {
         <p>{{ event?.date || "" }} {{ event?.keyLabel || "" }} {{ event?.time || "" }} {{ event?.exit || "" }}
           {{ event?.type || "" }} {{ event?.pass || "" }} ...</p><!--empty cuz expander-->
       </template>
-      <template #filter="{filterModel, filterCallback}">
-        <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
-                   :placeholder="`Искать по ${v}`"/>
-      </template>
+<!--      <template #filter="{filterModel, filterCallback}">-->
+<!--        <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"-->
+<!--                   :placeholder="`Искать по ${v}`"/>-->
+<!--      </template>-->
     </Column>
 
     <template #expansion="{ data: {info,dates} }">
