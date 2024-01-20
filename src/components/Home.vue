@@ -416,7 +416,7 @@ const confirmUploadNew = (event) => {
       }">
         <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">
           <div class="flex justify-content-between">
-            <p>{{ getStatsForAll(dates).late.str }}</p>
+<!--            <p>{{ getStatsForAll(dates).late.str }}</p>-->
             <p>Работал: {{ getStatsForAll(dates).worked.hours }} часов(а) {{getStatsForAll(dates).worked.minutes}} минут</p>
             <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:
               {{
