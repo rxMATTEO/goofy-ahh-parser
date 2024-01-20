@@ -4,6 +4,7 @@ import {computed, inject, onMounted, Ref, ref} from "vue";
 import {FilterMatchMode} from "primevue/api";
 import {useConfirm} from "primevue/useconfirm";
 import {useRouter} from "vue-router";
+import {median} from "../stuff/median.ts";
 
 type DateInfo = {
   [k in string]: Info[]
@@ -98,7 +99,11 @@ onMounted(async () => {
     return chel;
   });
   people.value.forEach(chel => {
-    if(Object.keys(chel.dates).length > 0) chel.fullInfo = getStatsForAll(chel.dates);
+    if(Object.keys(chel.dates).length > 0) {
+      chel.fullFormatted = Object.entries(chel.dates).map(([date,data]) => formateDate(data));
+      chel.median = convertMinsToHrsMins(median(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)));
+      chel.fullInfo = getStatsForAll(chel.dates);
+    }
   })
   console.log(people.value);
 });
@@ -111,7 +116,7 @@ const columns = computed(() => {
     },
     notExistedAvg: {
       header: 'Отсутствовал, ср.',
-      field: 'field',
+      field: 'median',
     },
     workedSum: {
       header: 'Работал, всего',
