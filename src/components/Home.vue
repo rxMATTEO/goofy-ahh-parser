@@ -175,13 +175,17 @@ function formateDate(info: Info[]) {
   const sumNormilized = convertMinsToHrsMins( (sum.hours * 60) + sum.minutes );
   // console.log(new Date(allexitsSum))
 
-
+  const result = getResultFromDate(Math.abs(getDate(firstEnter) - getDate("9:00")));
+  getDate(firstEnter) - getDate("9:00") < 0 ? result.str = `Пришел раньше на:`: result.str = 'Опоздал на:';
+  result.str += ` ${result.hours} часов(а) ${result.minutes} минут`;
+  const result2 = getResultFromDate(getDate(firstEnter) - getDate("9:00"))
+  result2.str = result.str;
   return {
     // allTime: result,
     enter: firstEnter,
     exit: lastExit,
     worked: getResultFromDate(difference),
-    late: getResultFromDate(getDate(firstEnter) - getDate("9:00")),
+    late: result2,
     overworked: getResultFromDate(getDate(lastExit) - getDate("18:00")),
     notExisted: normilizeDate(sumNormilized)
   };
@@ -459,9 +463,7 @@ const confirmUploadNew = (event) => {
           <div class="flex justify-content-between">
             <p>Вошел: {{ formateDate(data).enter }}</p>
             <p>Вышел: {{ formateDate(data).exit }}</p>
-            <p v-if="formateDate(data).late.hours > 0 || formateDate(data).late.minutes > 0">Опоздал на:
-              {{ transformDataToHuman(formateDate(data).late) }}</p>
-            <p v-else>Пришел раньше на: {{ transformDataToHuman(formateDate(data).late) }}</p>
+            <p>{{ formateDate(data).late.str }}</p>
             <p>Работал: {{ transformDataToHuman(formateDate(data).worked) }}</p>
             <p v-if="formateDate(data).notExisted">Отсутствовал:
               {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}</p>
