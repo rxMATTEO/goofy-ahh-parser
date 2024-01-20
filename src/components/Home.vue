@@ -172,6 +172,7 @@ function formateDate(info: Info[]) {
     sum.minutes += minutes;
     sum.hours += hours;
   }
+  const sumNormilized = convertMinsToHrsMins( (sum.hours * 60) + sum.minutes );
   // console.log(new Date(allexitsSum))
 
 
@@ -182,7 +183,7 @@ function formateDate(info: Info[]) {
     worked: getResultFromDate(difference),
     late: getResultFromDate(getDate(firstEnter) - getDate("9:00")),
     overworked: getResultFromDate(getDate(lastExit) - getDate("18:00")),
-    notExisted: sum
+    notExisted: normilizeDate(sumNormilized)
   };
 }
 
@@ -231,6 +232,17 @@ function getDate(date: string) {
   return new Date(0, 0, 0, date.split(':')[0], date.split(':')[1]);
 }
 
+function normilizeDate(date: string){
+  const hours = +date.split(':')[0];
+  const minutes = +date.split(':')[1];
+  return {
+    hours,
+    minutes,
+    str: `${hours}:${minutes}`,
+    positiveStr: `${hours * -1}:${minutes * -1}`
+  };
+}
+
 function getResultFromDate(date: string) {
   const hours = Math.floor((date % 86400000) / 3600000);
   const minutes = Math.round(((date % 86400000) % 3600000) / 60000);
@@ -240,6 +252,14 @@ function getResultFromDate(date: string) {
     str: `${hours}:${minutes}`,
     positiveStr: `${hours * -1}:${minutes * -1}`
   };
+}
+
+function convertMinsToHrsMins (minutes) {
+  let h = Math.floor(minutes / 60);
+  let m = minutes % 60;
+  h = h < 10 ? '0' + h : h;
+  m = m < 10 ? '0' + m : m;
+  return h + ':' + m;
 }
 
 onMounted(() => {
@@ -282,6 +302,7 @@ const setChartOptions = () => {
 };
 
 function getChartOptions(date) {
+  console.log(date)
   if (date.notExisted.hours === 0 && date.notExisted.minutes === 0) {
     return [(date.worked.hours * 60) + +date.worked.minutes, 0]; // todo genius
 
