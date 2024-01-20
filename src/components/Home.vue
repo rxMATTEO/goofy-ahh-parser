@@ -51,7 +51,7 @@ onMounted(async () => {
       (person: Person) => {
         return {
           ...person,
-          fullName: person.firstName + ' ' + person.lastName + ' ' + person.middleName,
+          fullName: person.lastName + ' ' + person.firstName + ' ' + person.middleName,
           info: person.info.map(
               ([date, keyLabel, time, exit, type, pass, k]) => {
                 return {
@@ -102,6 +102,9 @@ onMounted(async () => {
 const columns = computed(() => {
   return {
     fullName: 'ФИО',
+    notExistedAvg: 'Отсутствовал, ср.',
+    workedSum: 'Работал, всего',
+    notExistedAll: 'Отсутствовал, всего',
     // firstName: 'Имя',
     // middleName: 'Отчество',
     // page: 'Страница',
@@ -381,7 +384,7 @@ const confirmUploadNew = (event) => {
     </div>
   </div>
 
-  <DataTable v-model:filters="filters" v-model:expandedRows="expandedPeople" tableStyle="max-width: 100vw"
+  <DataTable v-model:expandedRows="expandedPeople" tableStyle="max-width: 100vw"
              :value="people" paginator :rows="people?.length" removableSort
              :rowsPerPageOptions="rowsPerPage" :loading="!people" showGridlines
              :filterDisplay="'row'" :globalFilterFields="['firstName', 'lastName', 'middleName']"
