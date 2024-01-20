@@ -42,7 +42,7 @@ const api = inject('apiUrl');
 
 onMounted(async () => {
   try {
-    body.value = (await axios.get(api)).data;
+    body.value = (await axios.get(`${api}/api/ping`)).data;
   } catch {
     error.value = 'Не удалось подключиться к серверу. Попробуй его запустить: npm run server';
   }
@@ -76,6 +76,7 @@ onMounted(async () => {
       }
   );
 
+  // todo parse dates correctly
   people.value?.map(chel => {
     chel.dates = {};
     chel.info.forEach((info, index, array) => {
@@ -96,15 +97,30 @@ onMounted(async () => {
     }));
     return chel;
   });
-  console.log(people.value)
+  people.value.forEach(chel => {
+    if(Object.keys(chel.dates).length > 0) chel.fullInfo = getStatsForAll(chel.dates);
+  })
+  console.log(people.value);
 });
 
 const columns = computed(() => {
   return {
-    fullName: 'ФИО',
-    notExistedAvg: 'Отсутствовал, ср.',
-    workedSum: 'Работал, всего',
-    notExistedAll: 'Отсутствовал, всего',
+    fullName: {
+      header: 'ФИО',
+      field: 'fullName'
+    },
+    notExistedAvg: {
+      header: 'Отсутствовал, ср.',
+      field: 'field',
+    },
+    workedSum: {
+      header: 'Работал, всего',
+      field: 'fullInfo.worked.str'
+    },
+    notExistedAll: {
+      header: 'Отсутствовал, всего',
+      field: 'fullInfo.notExisted.str'
+    },
     // firstName: 'Имя',
     // middleName: 'Отчество',
     // page: 'Страница',
@@ -344,6 +360,8 @@ const confirmUploadNew = (event) => {
   confirm.require({
     target: event.currentTarget,
     message: 'После загрузки нового документа, текущие данные будут перезаписаны. <br> Ты точно хочешь продолжить?',
+    rejectLabel: 'Нет',
+    acceptLabel: 'Да',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
       router.push('/create');
@@ -402,7 +420,7 @@ const confirmUploadNew = (event) => {
     </template>
 
     <Column expander style="width: 5rem"/>
-    <Column v-for="[k,v] in Object.entries(columns)" :header="v" :field="k" sortable :key="k"
+    <Column v-for="[k,{header, field}] in Object.entries(columns)" :header="header" :field="field" sortable :key="k"
             :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
       <template #body="{data: {info: [event]}}" v-if="k === 'info'">
         <p>{{ event?.date || "" }} {{ event?.keyLabel || "" }} {{ event?.time || "" }} {{ event?.exit || "" }}

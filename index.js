@@ -152,6 +152,10 @@ app.post('/create', upload.single('rtf'), (req, res) => {
     }
   });
 });
+
+app.get('/api/ping', function (req, res) {
+  res.send('pong');
+})
 console.log('listening on port 3001');
 app.listen(3001);
 
