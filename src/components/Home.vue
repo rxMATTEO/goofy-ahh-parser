@@ -217,7 +217,7 @@ function getStatsForAll(dates: Info[]) {
   const lateHours = (val.late.hours < 0) ? val.late.hours * -1 : val.late.hours;
   const lateMinutes = (val.late.minutes < 0) ? val.late.minutes * -1 : val.late.minutes;
   const late = normilizeDate(convertMinsToHrsMins((lateHours * 60) + lateMinutes ));
-  late.str = (val.late.minutes < 0) || (val.late.hours < 0) ? `Пришел раньше: ${late.hours}:${late.minutes}` : `Опоздал на:${late.hours}:${late.minutes}`;
+  late.str = (val.late.minutes < 0) || (val.late.hours < 0) ? `Пришел раньше на: ${late.hours} часов(а) ${late.minutes} минут` : `Опоздал на: ${late.hours} часов(а) ${late.minutes} минут`;
   const notExisted = normilizeDate(convertMinsToHrsMins((val.notExisted.hours * 60) + val.notExisted.minutes ));
   val.worked = worked;
   val.late = late;
@@ -328,7 +328,7 @@ function getEvents(data) {
 const router = useRouter();
 
 function transformDataToHuman(data) {
-  return `${Math.abs(data.hours)} часов ${Math.abs(data.minutes)} минут`;
+  return `${Math.abs(data.hours)} часов (а) ${Math.abs(data.minutes)} минут`;
 }
 
 const confirmUploadNew = (event) => {
@@ -412,13 +412,11 @@ const confirmUploadNew = (event) => {
       }">
         <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">
           <div class="flex justify-content-between">
-<!--            todo normilize-->
             <p>{{ getStatsForAll(dates).late.str }}</p>
-            <p>Работал: {{ getStatsForAll(dates).worked.hours.toFixed(1) }} часов(а)</p>
-            {{getStatsForAll(dates).worked}}
+            <p>Работал: {{ getStatsForAll(dates).worked.hours }} часов(а) {{getStatsForAll(dates).worked.minutes}} минут</p>
             <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:
               {{
-                `${getStatsForAll(dates).notExisted.str} часов(а)`
+                `${getStatsForAll(dates).notExisted.hours} часов(а) ${getStatsForAll(dates).notExisted.minutes} минут`
               }}
             </p>
             <p v-else>Не выходил</p>
@@ -466,7 +464,7 @@ const confirmUploadNew = (event) => {
             <p v-else>Пришел раньше на: {{ transformDataToHuman(formateDate(data).late) }}</p>
             <p>Работал: {{ transformDataToHuman(formateDate(data).worked) }}</p>
             <p v-if="formateDate(data).notExisted">Отсутствовал:
-              {{ `${formateDate(data).notExisted.hours} часов ${formateDate(data).notExisted.minutes} минут` }}</p>
+              {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}</p>
             <p v-else>Не выходил</p>
 
             <div class="card flex justify-content-center">
