@@ -37,6 +37,9 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
   while (true) {
     const infoBlock = (parser.window.document.querySelectorAll('p')[i]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
     if(!infoBlock) return peopleArray; // end of method
+
+    // !TODO! HERE NOT SOLVED. NOT WORKING WHEN FIRST NAME IN ONE LINE
+
     if(!initial && !noNameBlocks.find(block => infoBlock.toString().trim().toLowerCase().includes(block.toLowerCase())) && infoBlock.length > 0) {
       if(!chel.firstName) {
         const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
@@ -56,7 +59,10 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
       const [first, last] = (parser.window.document.querySelectorAll('p')[i - 1]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i))[0].split(' ');
         chel.firstName = last;
         chel.lastName = first;
-        chel.middleName = infoBlock[0];
+        chel.middleName = infoBlock[0]; // TODO MB ITS IT
+
+      // !!! TODO END OF NOT SOLVED
+
       } else {
       if (i === startIndex) {
         const infoBlock = (parser.window.document.querySelectorAll('p')[i]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
