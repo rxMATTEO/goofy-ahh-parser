@@ -104,7 +104,8 @@ onMounted(async () => {
       chel.median = normilizeDate(convertMinsToHrsMins(median(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)))).str;
       chel.fullInfo = getStatsForAll(chel.dates);
     }
-  })
+  });
+  people.value = people.value.filter( chel => chel.info.length > 0 );
   console.log(people.value);
 });
 
