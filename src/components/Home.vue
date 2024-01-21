@@ -101,7 +101,7 @@ onMounted(async () => {
   people.value.forEach(chel => {
     if(Object.keys(chel.dates).length > 0) {
       chel.fullFormatted = Object.entries(chel.dates).map(([date,data]) => formateDate(data));
-      chel.median = convertMinsToHrsMins(median(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)));
+      chel.median = normilizeDate(convertMinsToHrsMins(median(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)))).str;
       chel.fullInfo = getStatsForAll(chel.dates);
     }
   })
@@ -265,8 +265,8 @@ function normilizeDate(date: string){
   return {
     hours,
     minutes,
-    str: `${hours}:${minutes}`,
-    positiveStr: `${hours * -1}:${minutes * -1}`
+    str: `${hours} часов ${minutes} минут`,
+    positiveStr: `${hours * -1} часов ${minutes * -1} минут`
   };
 }
 
