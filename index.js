@@ -36,7 +36,7 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
   const noNameBlocks = ['2023', new Date().getFullYear().toString(), 'Помещение', 'Дата', 'Стр', "Выход", "Вход",];
   while (true) {
     const infoBlock = (parser.window.document.querySelectorAll('p')[i]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
-    if(!infoBlock) return peopleArray;
+    if(!infoBlock) return peopleArray; // end of method
     if(!initial && !noNameBlocks.find(block => infoBlock.toString().trim().toLowerCase().includes(block.toLowerCase())) && infoBlock.length > 0) {
       if(!chel.firstName) {
         const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];

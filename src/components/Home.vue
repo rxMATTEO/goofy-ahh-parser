@@ -48,6 +48,7 @@ onMounted(async () => {
     error.value = 'Не удалось подключиться к серверу. Попробуй его запустить: npm run server';
   }
   info.value = (await axios.get(`${api}/info`)).data;
+  console.log(((await axios.get(`${api}/people`)).data));
   people.value = (((await axios.get(`${api}/people`)).data) as Person[]).map(
       (person: Person) => {
         return {
