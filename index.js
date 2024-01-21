@@ -107,12 +107,12 @@ function parsePeople(htmlString) {
   return peopleParser(4, people, parser);
 }
 
-app.get('/info', async function (req, res) {
+app.get('/api/info', async function (req, res) {
   const result = await mammoth.convertToHtml({path: 'stuff.docx'});
   res.send(parseInfo((result.value)));
 });
 
-app.get('/people', async function (req, res) {
+app.get('/api/people', async function (req, res) {
   const result = await mammoth.convertToHtml({path: 'stuff.docx'});
   res.send(parsePeople((result.value)));
 });
@@ -129,7 +129,7 @@ app.get('/robots.txt', function (req, res) {
   res.send("User-agent: *\nDisallow: /");
 });
 
-app.post('/create', upload.single('rtf'), (req, res) => {
+app.post('/api/create', upload.single('rtf'), (req, res) => {
   if (!req.file) {
     return res.status(400).send('Где файл? Нету.');
   }

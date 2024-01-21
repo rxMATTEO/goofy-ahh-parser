@@ -43,7 +43,7 @@ const api = inject('apiUrl');
 
 onMounted(async () => {
   try {
-    body.value = (await axios.get(`${api}/api/ping`)).data;
+    body.value = (await axios.get(`${api}/ping`)).data;
   } catch {
     error.value = 'Не удалось подключиться к серверу. Попробуй его запустить: npm run server';
   }
