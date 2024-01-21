@@ -58,9 +58,9 @@ const formatSize = (bytes) => {
 </script>
 
 <template>
-  <FileUpload name="rtf" :url="`${api}/create`" @upload="onTemplatedUpload($event)" :multiple="false" accept=".rtf"
+  <FileUpload name="rtf" :url="`${api}/create`" @upload="onTemplatedUpload($event)" :multiple="false" accept=".docx"
               :maxFileSize="1000000" @select="onSelectedFiles" :auto="true"
-              invalidFileTypeMessage="{0} - не rtf документ">
+              invalidFileTypeMessage="{0} - не docx документ">
     <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
       <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
         <div class="flex gap-2">
@@ -115,7 +115,7 @@ const formatSize = (bytes) => {
     <template #empty>
       <div class="flex align-items-center justify-content-center flex-column">
         <i class="pi pi-cloud-upload border-2 border-circle p-5 text-8xl text-400 border-400"/>
-        <p class="mt-4 mb-0">Брось сюда rtf документ для его загрузки или нажми кнопку сверху.</p>
+        <p class="mt-4 mb-0">Брось сюда html документ для его загрузки или нажми кнопку сверху.</p>
       </div>
     </template>
   </FileUpload>
