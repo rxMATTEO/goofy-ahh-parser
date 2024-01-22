@@ -5,6 +5,7 @@ import {FilterMatchMode} from "primevue/api";
 import {useConfirm} from "primevue/useconfirm";
 import {useRouter} from "vue-router";
 import {median} from "../stuff/median.ts";
+import avg from "../stuff/avg.ts";
 
 type DateInfo = {
   [k in string]: Info[]
@@ -103,6 +104,7 @@ onMounted(async () => {
     if(Object.keys(chel.dates).length > 0) {
       chel.fullFormatted = Object.entries(chel.dates).map(([date,data]) => formateDate(data));
       chel.median = normilizeDate(convertMinsToHrsMins(median(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)))).str;
+      chel.avg = normilizeDate(convertMinsToHrsMins(avg(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)).toFixed(0))).str;
       chel.fullInfo = getStatsForAll(chel.dates);
     }
   });
@@ -116,9 +118,13 @@ const columns = computed(() => {
       header: 'ФИО',
       field: 'fullName'
     },
+    notExistedMedian: {
+      header: 'Отсутствовал, мед.',
+      field: 'median',
+    },
     notExistedAvg: {
       header: 'Отсутствовал, ср.',
-      field: 'median',
+      field: 'avg',
     },
     workedSum: {
       header: 'Работал, всего',
