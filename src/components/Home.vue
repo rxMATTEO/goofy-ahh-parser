@@ -6,6 +6,7 @@ import {useConfirm} from "primevue/useconfirm";
 import {useRouter} from "vue-router";
 import {median} from "../stuff/median.ts";
 import avg from "../stuff/avg.ts";
+import late from "../stuff/late.ts";
 
 type DateInfo = {
   [k in string]: Info[]
@@ -105,6 +106,10 @@ onMounted(async () => {
       chel.fullFormatted = Object.entries(chel.dates).map(([date,data]) => formateDate(data));
       chel.median = normilizeDate(convertMinsToHrsMins(median(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)))).str;
       chel.avg = normilizeDate(convertMinsToHrsMins(avg(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)).toFixed(0))).str;
+      chel.lateTimes = (late(Object.entries(chel.dates).map(([date, data]) => {
+        return normilizeDate(data[0].time);
+      })));
+      // chel.late = normilizeDate(convertMinsToHrsMins(late() );
       chel.fullInfo = getStatsForAll(chel.dates);
     }
   });
@@ -134,6 +139,10 @@ const columns = computed(() => {
       header: 'Отсутствовал, всего',
       field: 'fullInfo.notExisted.str'
     },
+    late: {
+      header: "Опоздал, раз",
+      field: 'lateTimes',
+    }
     // firstName: 'Имя',
     // middleName: 'Отчество',
     // page: 'Страница',
