@@ -414,6 +414,10 @@ const confirmUploadNew = (event) => {
       </div>
 
       <div>
+        Сотрудников: {{ people.length }}
+      </div>
+
+      <div>
         <ConfirmPopup>
           <template #message="{ message: { message } }">
             <div class="p-3">
