@@ -11,19 +11,28 @@ const { exec } = require('child_process');
 
 app.use(cors());
 app.use(express.static('dist'));
-app.use(express.json())
+app.use(express.json());
+
+let DOC = '';
+(async () => {
+  const windows1251 = await import('windows-1251');
+  const DOC1 = windows1251.decode(readFileSync('ACTUAL.htm'));
+  DOC = DOC1;
+})();
+
 
 function parseInfo(htmlString) {
   const parser = new jsdom.JSDOM(htmlString);
-  const events = (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
-  const dates = (parser.window.document.querySelectorAll('p')[2].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
-  const time = (parser.window.document.querySelectorAll('p')[3].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
-  return {
-    eventsType: events[0],
-    creationDate: events.slice(1).join(': '),
-    dates: dates.slice(1).join(''),
-    time: time.slice(1).join('')
-  }
+  const events = (parser.window.document.querySelectorAll('tr')[0]);
+  const dates = [(parser.window.document.querySelectorAll('tr')[2]) ];
+  const time = (parser.window.document.querySelectorAll('tr')[3]);
+  console.log(dates, time)
+  // return {
+  //   eventsType: events.querySelector('u').textContent,
+  //   creationDate: events.slice(1).join(': '),
+  //   dates: dates.slice(1).join(''),
+  //   time: time.slice(1).join('')
+  // }
   // return parser.window.document.querySelectorAll('p')[0].textContent;
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
 }
@@ -35,7 +44,8 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
   let i = startIndex;
   const noNameBlocks = ['2023', new Date().getFullYear().toString(), 'Помещение', 'Дата', 'Стр', "Выход", "Вход",];
   while (true) {
-    const infoBlock = (parser.window.document.querySelectorAll('p')[i]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
+    const infoBlock = (parser.window.document.querySelectorAll('tr')[i]);
+    console.log(infoBlock)
     if(!infoBlock) return peopleArray; // end of method
 
     // !TODO! HERE NOT SOLVED. NOT WORKING WHEN FIRST NAME IN ONE LINE FIXME
@@ -108,13 +118,13 @@ function parsePeople(htmlString) {
 }
 
 app.get('/api/info', async function (req, res) {
-  const result = await mammoth.convertToHtml({path: 'stuff.docx'});
-  res.send(parseInfo((result.value)));
+  // const result = await mammoth.convertToHtml({path: 'stuff.docx'});
+  res.send(parseInfo((DOC)));
 });
 
 app.get('/api/people', async function (req, res) {
-  const result = await mammoth.convertToHtml({path: 'stuff.docx'});
-  res.send(parsePeople((result.value)));
+  // const result = await mammoth.convertToHtml({path: 'stuff.docx'});
+  res.send(parsePeople(DOC));
 });
 
 app.get('/', async function (req, res) {
