@@ -77,8 +77,8 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
       } else {
         chel.middleName = prollyThrd;
       }
-      chel.firstName = first;
-      chel.lastName = scnd;
+      chel.firstName = scnd;
+      chel.lastName = first;
 
       // !!! TODO END OF NOT SOLVED
 
