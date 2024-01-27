@@ -101,8 +101,8 @@ const formatSize = (bytes) => {
           <div v-for="(file, index) of uploadedFiles" :key="file.name + file.type + file.size"
                class="card m-0 px-6 py-2 flex flex-column border-1 surface-border align-items-center gap-3">
             <div>
-              <img role="presentation" :alt="file.name" src="/rtf.png" width="150" height="150"
-                   class="shadow-2"/>
+<!--              <img role="presentation" :alt="file.name" src="/rtf.png" width="150" height="150"-->
+<!--                   class="shadow-2"/>-->
             </div>
             <span class="font-semibold">{{ file.name }}</span>
             <div>{{ formatSize(file.size) }}</div>
