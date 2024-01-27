@@ -114,6 +114,7 @@ onMounted(async () => {
     }
   });
   people.value = people.value.filter( chel => chel.info.length > 0 );
+  info.value.workDays = Math.max(...people.value?.map(chel => Object.entries(chel.dates).length));
   console.log(people.value);
 });
 
@@ -399,13 +400,13 @@ const confirmUploadNew = (event) => {
     </div>
     <div v-if="info" class="flex justify-content-between align-items-center">
       <div>
-        Тип событий: {{ info.eventsType }}
+        Рабочих дней: {{ info.workDays }}
       </div>
       <div>
-        {{ info.creationDate }}
+        {{ `Отчет создан: ${info.creationDate.split(' ')[2]} ${info.creationDate.split(' ')[3]}` }}
       </div>
       <div>
-        Дата: {{ info.dates }}
+        Период : {{ info.dates }}
       </div>
       <div>
         Время: {{ info.time }}
@@ -419,7 +420,7 @@ const confirmUploadNew = (event) => {
             </div>
           </template>
         </ConfirmPopup>
-        <Button @click="confirmUploadNew($event)">Загрузить другой документ</Button>
+        <Button @click="confirmUploadNew($event)">Загрузить отчет</Button>
       </div>
     </div>
   </div>
