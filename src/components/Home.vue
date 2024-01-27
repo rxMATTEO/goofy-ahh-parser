@@ -388,7 +388,7 @@ function transformDataToHuman(data) {
 const confirmUploadNew = (event) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'После загрузки нового документа, текущие данные будут перезаписаны. <br> Ты точно хочешь продолжить?',
+    message: 'К текущему отчету можно будет вернуться через меню выбора отчета.<br/> Вы уверены, что хотите загрузить новый отчет?',
     rejectLabel: 'Нет',
     acceptLabel: 'Да',
     icon: 'pi pi-exclamation-triangle',
