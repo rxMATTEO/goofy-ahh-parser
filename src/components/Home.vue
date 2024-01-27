@@ -143,6 +143,10 @@ const columns = computed(() => {
     late: {
       header: "Опоздал, раз",
       field: 'lateTimes',
+    },
+    entranceQuantity: {
+      header: 'Вошел, раз',
+      field: 'todo'
     }
     // firstName: 'Имя',
     // middleName: 'Отчество',
