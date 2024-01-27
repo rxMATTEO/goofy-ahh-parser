@@ -36,52 +36,98 @@ function parseInfo(htmlString) {
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
 }
 
-function peopleParser(startIndex, peopleArray, parser, initial = true) {
+function peopleParser(startIndex, peopleArray, parser, initial = true){
   let chel = {
     info: [],
   };
   let i = startIndex;
   const noNameBlocks = ['2023', new Date().getFullYear().toString(), 'Помещение', 'Дата', 'Стр', "Выход", "Вход",];
-  const tr = parser.window.document.querySelectorAll('tr');
   while (true) {
-    const infoBlock = tr[i];
-    if (!infoBlock) return peopleArray; // end of method
-    const textContent = (tr[i].textContent);
-    if (noNameBlocks.find(block => textContent.trim().toLowerCase().includes(block.toLowerCase()))) {
-      chel.info.push( Array.from(infoBlock.querySelectorAll('td').values()).map(i => i.textContent) );
-    } else {
-      if(i > 100) {
-        debugger;
-      }
-      if(!initial) {
-        peopleArray.push(chel);
-        const [firstName, lastName] = textContent.split(' ');
+    const infoBlock = (parser.window.document.querySelectorAll('tr')[i]?.textContent);
+    const infoBlockRaw = (parser.window.document.querySelectorAll('tr')[i]);
+    if(infoBlock == '') {
+      i++
+      continue;
+    };
+    if(!infoBlock) return peopleArray; // end of method
 
-        chel = {
-          info: [],
-          firstName: firstName,
-          lastName: lastName,
-          middleName: tr[i + 1].textContent
-        }
-      }
-      if(!chel.firstName || !chel.lastName && initial){
-        const [firstName, lastName] = textContent.split(' ');
+    // !TODO! HERE NOT SOLVED. NOT WORKING WHEN FIRST NAME IN ONE LINE FIXME
+
+    if(!initial && !noNameBlocks.find(block => infoBlock.trim().toLowerCase().includes(block.toLowerCase())) && infoBlock.length > 0) {
+      if(!chel.firstName) {
+        const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
         chel.firstName = firstName;
         chel.lastName = lastName;
-        chel.middleName = tr[i + 1].textContent;
-        initial = false;
-        i++;
+        chel.middleName = middleName;
+      }
+      const foundChel = peopleArray.find(ch => chel.firstName === ch.firstName && chel.lastName === ch.lastName && chel.middleName === ch.middleName);
+      if(foundChel){
+        foundChel.info.push(...chel.info);
+      } else {
+        peopleArray.push(chel);
+      }
+      chel = {
+        info: [],
+      }
+      const [first, scnd, prollyThrd] = (parser.window.document.querySelectorAll('tr')[i]?.textContent).split(' ');
+
+      const next = parser.window.document.querySelectorAll('tr')[i + 1]?.textContent;
+      if(!noNameBlocks.find(block => next.trim().toLowerCase().includes(block.toLowerCase()))){
+      chel.middleName = parser.window.document.querySelectorAll('tr')[++i]?.textContent; // TODO MB ITS IT
+      } else {
+        chel.middleName = prollyThrd;
+      }
+      chel.firstName = first;
+      chel.lastName = scnd;
+
+      // !!! TODO END OF NOT SOLVED
+
+    } else {
+      if (i === startIndex) {
+        const infoBlock = (parser.window.document.querySelectorAll('tr')[i]?.textContent);
+        chel.page = infoBlock;
+        chel.pageNumber = infoBlock.split(' ')[1];
+      } else if (i === startIndex + 1) {
+        chel.room = infoBlock;
+      } else if (i === startIndex + 2) {
+        chel.rows = infoBlock;
+      } else if (initial && i === startIndex + 5) {
+        chel.middleName = infoBlock;
+      } else if (initial && i === startIndex + 4) {
+        const [first, last] = infoBlock.split(' ');
+        chel.lastName = first;
+        chel.firstName = last;
+      } else if (!infoBlock.toString().trim().startsWith('Стр.')) {
+        chel.info.push(_infoBlockToArr(infoBlockRaw));
+      } else {
+        if(!chel.firstName) {
+          const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
+          chel.firstName = firstName;
+          chel.lastName = lastName;
+          chel.middleName = middleName;
+        }
+        const foundChel = peopleArray.find(ch => chel.firstName === ch.firstName && chel.lastName === ch.lastName && chel.middleName === ch.middleName);
+        if(foundChel){
+          foundChel.info.push(...chel.info);
+        } else {
+          peopleArray.push(chel);
+        }
+        break;
       }
     }
     i += 1;
   }
-  return peopleArray;
+  return peopleParser(i, peopleArray, parser, false);
+}
+
+function _infoBlockToArr(infoBlock){
+  return Array.from(infoBlock.querySelectorAll('td').values()).map( i => i.textContent );
 }
 
 function parsePeople(htmlString) {
   const parser = new jsdom.JSDOM(htmlString);
   const people = [];
-  return peopleParser(8, people, parser);
+  return peopleParser(4, people, parser);
 }
 
 app.get('/api/info', async function (req, res) {
