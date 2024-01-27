@@ -7,6 +7,7 @@ import {useRouter} from "vue-router";
 import {median} from "../stuff/median.ts";
 import avg from "../stuff/avg.ts";
 import late from "../stuff/late.ts";
+import sum from "../stuff/sum.ts";
 
 type DateInfo = {
   [k in string]: Info[]
@@ -80,7 +81,6 @@ onMounted(async () => {
       }
   );
 
-  // todo parse dates correctly
   people.value?.map(chel => {
     chel.dates = {};
     chel.info.forEach((info, index, array) => {
@@ -111,6 +111,7 @@ onMounted(async () => {
       })));
       // chel.late = normilizeDate(convertMinsToHrsMins(late() );
       chel.fullInfo = getStatsForAll(chel.dates);
+      chel.enterTimes = sum(Object.entries(chel.dates).map(([_, dates]) => dates.filter(el => el.type === 'ВХОД').length ));
     }
   });
   people.value = people.value.filter(chel => chel.info.length > 0);
@@ -146,7 +147,7 @@ const columns = computed(() => {
     },
     entranceQuantity: {
       header: 'Вошел, раз',
-      field: 'todo'
+      field: 'enterTimes'
     }
     // firstName: 'Имя',
     // middleName: 'Отчество',
