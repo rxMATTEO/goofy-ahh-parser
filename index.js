@@ -4,10 +4,10 @@ const cors = require("cors");
 const app = express();
 const multer = require('multer');
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({storage: storage});
 const jsdom = require("jsdom");
 const {writeFileSync, readFileSync} = require("fs");
-const { exec } = require('child_process');
+const {exec} = require('child_process');
 
 app.use(cors());
 app.use(express.static('dist'));
@@ -36,7 +36,7 @@ function parseInfo(htmlString) {
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
 }
 
-function peopleParser(startIndex, peopleArray, parser, initial = true){
+function peopleParser(startIndex, peopleArray, parser, initial = true) {
   let chel = {
     info: [],
   };
@@ -44,20 +44,16 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
   const noNameBlocks = ['2023', new Date().getFullYear().toString(), 'Помещение', 'Дата', 'Стр', "Выход", "Вход",];
   while (true) {
     const infoBlock = (parser.window.document.querySelectorAll('tr')[i]);
-    console.log(infoBlock)
-    if(!infoBlock) return peopleArray; // end of method
-
-    // !TODO! HERE NOT SOLVED. NOT WORKING WHEN FIRST NAME IN ONE LINE FIXME
-
-    if(!initial && !noNameBlocks.find(block => infoBlock.toString().trim().toLowerCase().includes(block.toLowerCase())) && infoBlock.length > 0) {
-      if(!chel.firstName) {
-        const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
+    if (!infoBlock) return peopleArray; // end of method
+    if (!initial && !noNameBlocks.find(block => infoBlock.textContent.trim().toLowerCase().includes(block.toLowerCase())) && infoBlock.length > 0) {
+      if (!chel.firstName) {
+        const {firstName, lastName, middleName} = peopleArray[peopleArray.length - 1];
         chel.firstName = firstName;
         chel.lastName = lastName;
         chel.middleName = middleName;
       }
       const foundChel = peopleArray.find(ch => chel.firstName === ch.firstName && chel.lastName === ch.lastName && chel.middleName === ch.middleName);
-      if(foundChel){
+      if (foundChel) {
         foundChel.info.push(...chel.info);
       } else {
         peopleArray.push(chel);
@@ -65,39 +61,37 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
       chel = {
         info: [],
       }
-      const [first, last] = (parser.window.document.querySelectorAll('p')[i - 1]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i))[0].split(' ');
-        chel.firstName = last;
-        chel.lastName = first;
-        chel.middleName = infoBlock[0]; // TODO MB ITS IT
-
-      // !!! TODO END OF NOT SOLVED
-
-      } else {
-      if (i === startIndex) {
-        const infoBlock = (parser.window.document.querySelectorAll('p')[i]?.textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
-        chel.page = infoBlock[0];
-        chel.pageNumber = infoBlock[0].split(' ')[1];
-      } else if (i === startIndex + 1) {
-        chel.room = infoBlock[1];
-      } else if (i === startIndex + 2) {
-        chel.rows = infoBlock;
-      } else if (initial && i === startIndex + 5) {
-        chel.middleName = infoBlock[0];
-      } else if (initial && i === startIndex + 4) {
-        const [first, last] = infoBlock[0].split(' ');
+      const [first, last] = (parser.window.document.querySelectorAll('tr')[i - 1]?.textContent[0].split(' '));
+      chel.firstName = last;
+      chel.lastName = first;
+      chel.middleName = infoBlock[0];
+    } else {
+      // if (i === startIndex) {
+      // const infoBlock = (parser.window.document.querySelectorAll('tr')[i].textContent);
+      // chel.page = infoBlock[0];
+      // chel.pageNumber = infoBlock[0].split(' ')[1];
+      // } else if (i === startIndex + 1) {
+      // chel.room = infoBlock[1];
+      // } else if (i === startIndex + 2) {
+      // chel.rows = infoBlock;
+      if (initial && i === startIndex + 1) {
+        chel.middleName = infoBlock.textContent;
+      }
+      if (initial && i === startIndex) {
+        const [first, last] = infoBlock.textContent.split(' ');
         chel.lastName = first;
         chel.firstName = last;
       } else if (!infoBlock.toString().trim().startsWith('Стр.')) {
         chel.info.push(infoBlock);
       } else {
-        if(!chel.firstName) {
-          const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
+        if (!chel.firstName) {
+          const {firstName, lastName, middleName} = peopleArray[peopleArray.length - 1];
           chel.firstName = firstName;
           chel.lastName = lastName;
           chel.middleName = middleName;
         }
         const foundChel = peopleArray.find(ch => chel.firstName === ch.firstName && chel.lastName === ch.lastName && chel.middleName === ch.middleName);
-        if(foundChel){
+        if (foundChel) {
           foundChel.info.push(...chel.info);
         } else {
           peopleArray.push(chel);
@@ -113,7 +107,7 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
 function parsePeople(htmlString) {
   const parser = new jsdom.JSDOM(htmlString);
   const people = [];
-  return peopleParser(4, people, parser);
+  return peopleParser(8, people, parser);
 }
 
 app.get('/api/info', async function (req, res) {
