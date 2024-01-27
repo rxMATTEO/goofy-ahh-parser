@@ -8,21 +8,23 @@ const upload = multer({storage: storage});
 const jsdom = require("jsdom");
 const {writeFileSync, readFileSync} = require("fs");
 const {exec} = require('child_process');
+const fs = require('fs');
 
 app.use(cors());
 app.use(express.static('dist'));
 app.use(express.json());
 
-let DOC = '';
-(async () => {
-  DOC = await decodeGoofyDoc(readFileSync('docs/current/1706385615121.htm'));
-})();
+async function getDoc(){
+  console.log('decoding')
+  const currentFileName = fs.readdirSync('docs/current')[0];
+  console.log(currentFileName)
+  return await decodeGoofyDoc(readFileSync(`docs/current/${currentFileName}`));
+}
 
 async function decodeGoofyDoc(doc){
   const windows1251 = await import('windows-1251');
   return windows1251.decode(doc);
 }
-
 
 function parseInfo(htmlString) {
   const parser = new jsdom.JSDOM(htmlString);
@@ -131,10 +133,13 @@ function parsePeople(htmlString) {
 }
 
 app.get('/api/info', async function (req, res) {
+  const DOC = await getDoc();
+  console.log(DOC)
   res.send(parseInfo((DOC)));
 });
 
 app.get('/api/people', async function (req, res) {
+  const DOC = await getDoc();
   res.send(parsePeople(DOC));
 });
 
@@ -150,12 +155,21 @@ app.get('/robots.txt', function (req, res) {
   res.send("User-agent: *\nDisallow: /");
 });
 
-app.post('/api/create', upload.single('rtf'), (req, res) => {
+app.post('/api/create', upload.single('rtf'), async (req, res) => {
   if (!req.file) {
     return res.status(400).send('Где файл? Нету.');
   }
-  const file = req.file.buffer.toString();
-  console.log(file.toString())
+  const file = req.file.buffer;
+  // const decoded = await decodeGoofyDoc(file);
+  const currentFileName = fs.readdirSync('docs/current')[0];
+
+  const NEW_FILE_NAME = `${Date.now()}.htm`;
+
+  fs.renameSync(`docs/current/${currentFileName}`, `docs/${currentFileName}`);
+  fs.writeFileSync(`docs/current/${NEW_FILE_NAME}`, file.toString());
+  // DOC = decoded;
+  // console.log(decoded)
+  res.send('done');
 });
 
 app.get('/api/ping', function (req, res) {

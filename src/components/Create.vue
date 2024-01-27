@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import {computed, ref} from "vue";
 import RtfUpload from "./RtfUpload.vue";
+import ServerParse from "./ServerParse.vue";
+import Done from "./Done.vue";
 
 const steps = computed(() => {
   return [
@@ -22,6 +24,12 @@ const currentComponent = computed(() => {
   switch (stepIndex.value) {
     case 0: {
       return RtfUpload;
+    }
+    case 1: {
+      return ServerParse;
+    }
+    case 2: {
+      return Done;
     }
   }
 });
