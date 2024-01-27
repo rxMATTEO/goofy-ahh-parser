@@ -438,6 +438,11 @@ const confirmUploadNew = (event) => {
              :value="people" paginator :rows="people?.length" removableSort
              :rowsPerPageOptions="rowsPerPage" :loading="!people" showGridlines
              :filterDisplay="'row'" :globalFilterFields="['firstName', 'lastName', 'middleName']"
+             :pt="{
+               rowExpansionCell: {
+                 class: 'p-0'
+               }
+             }"
   >
     <template #header>
       <div class="flex justify-content-end align-items-center gap-2">
@@ -465,128 +470,177 @@ const confirmUploadNew = (event) => {
     </Column>
 
     <template #expansion="{ data: {info,dates} }">
-      <Tabview :scrollable="true" style="width: 95vw" :pt="{
-        nextButton: 'bg-primary',
-        previousButton: 'bg-primary',
+      {{Object.values(dates)[0]}}
+      <DataTable :value="Object.entries(dates)" :pt="{
+        table: {
+          style: {
+            'table-layout': 'fixed'
+          }
+        }
       }">
-        <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">
-          <div class="flex justify-content-between">
-<!--            <p>{{ getStatsForAll(dates).late.str }}</p>-->
-            <p>Работал: {{ getStatsForAll(dates).worked.hours }} часов(а) {{getStatsForAll(dates).worked.minutes}} минут</p>
-            <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:
-              {{
-                `${getStatsForAll(dates).notExisted.hours} часов(а) ${getStatsForAll(dates).notExisted.minutes} минут`
-              }}
-            </p>
-            <p v-else>Не выходил</p>
-
-            <div class="card flex justify-content-center">
-              <Chart type="pie" :data="{
-                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],
-                  datasets: [
-                      {
-                        data: getChartOptions(getStatsForAll(dates)),
-                        backgroundColor: ['#00FF69FF', '#FF0045FF'],
-                        hoverBackgroundColor: '#00C2FFFF'
-                      }
-                      ]
-                }" :options="chartOptions" class="w-full md:w-30rem"/>
-            </div>
-          </div>
-
-          <Accordion :activeIndex="-1" class="mt-5">
-            <AccordionTab header="Все события по текущей дате" :pt="{
-              headerAction: {
-                class: 'bg-primary-800'
-              },
-              content: {
-                class: 'surface-100'
-              }
-            }">
-              <div v-for="infoItem in info">
-                <p v-for="[k,v] in Object.entries(infoItem)">
-                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
-                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
-                  <span v-else>{{ v }}</span>
-                </p>
-                <Divider/>
-              </div>
-            </AccordionTab>
-          </Accordion>
-        </Tabpanel>
-        <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date" contentStyle="width: 95vw">
-          <div class="flex justify-content-between">
+        <Column style="width: 73px; height: 73px">
+        </Column>
+        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+          <template #header>
+            {{ null }}
+          </template>
+          <template #body="{data: [_, data]}">
             <p>Вошел: {{ formateDate(data).enter }}</p>
-            <p>Вышел: {{ formateDate(data).exit }}</p>
-            <p>{{ formateDate(data).late.str }}</p>
-            <p>Работал: {{ transformDataToHuman(formateDate(data).worked) }}</p>
-            <p v-if="formateDate(data).notExisted">Отсутствовал:
-              {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}</p>
-            <p v-else>Не выходил</p>
+          </template>
+        </Column>
+        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+          <template #body="{data}">
+            {{data[0]}}
+          </template>
+        </Column>
+        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+          <template #body="{data: [_, data]}">
+            <p>Вошел: {{ formateDate(data).enter }}</p>
+          </template>
+        </Column>
+        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+          <template #body="{data: [_, data]}">
+            <p>Вошел: {{ formateDate(data).enter }}</p>
+          </template>
+        </Column>
+        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+          <template #body="{data: [_, data]}">
+            <p>Вошел: {{ formateDate(data).enter }}</p>
+          </template>
+        </Column>
+        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+          <template #body="{data: [_, data]}">
+            <p>Вошел: {{ formateDate(data).enter }}</p>
+          </template>
+        </Column>
+        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+          <template #body="{data: [_, data]}">
+            <p>Вошел: {{ formateDate(data).enter }}</p>
+          </template>
+        </Column>
+      </DataTable>
+<!--      <Tabview :scrollable="true" style="width: 95vw" :pt="{-->
+<!--        nextButton: 'bg-primary',-->
+<!--        previousButton: 'bg-primary',-->
+<!--      }">-->
+<!--        <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">-->
+<!--          <div class="flex justify-content-between">-->
+<!--&lt;!&ndash;            <p>{{ getStatsForAll(dates).late.str }}</p>&ndash;&gt;-->
+<!--            <p>Работал: {{ getStatsForAll(dates).worked.hours }} часов(а) {{getStatsForAll(dates).worked.minutes}} минут</p>-->
+<!--            <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:-->
+<!--              {{-->
+<!--                `${getStatsForAll(dates).notExisted.hours} часов(а) ${getStatsForAll(dates).notExisted.minutes} минут`-->
+<!--              }}-->
+<!--            </p>-->
+<!--            <p v-else>Не выходил</p>-->
 
-            <div class="card flex justify-content-center">
-              <Chart type="pie" :data="{
-                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],
-                  datasets: [
-                      {
-                        data: getChartOptions(formateDate(data)),
-                        backgroundColor: ['#00FF69FF', '#FF0045FF'],
-                        hoverBackgroundColor: '#00C2FFFF'
-                      }
-                      ]
-                }" :options="chartOptions" class="w-full md:w-30rem"/>
-            </div>
-          </div>
+<!--            <div class="card flex justify-content-center">-->
+<!--              <Chart type="pie" :data="{-->
+<!--                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],-->
+<!--                  datasets: [-->
+<!--                      {-->
+<!--                        data: getChartOptions(getStatsForAll(dates)),-->
+<!--                        backgroundColor: ['#00FF69FF', '#FF0045FF'],-->
+<!--                        hoverBackgroundColor: '#00C2FFFF'-->
+<!--                      }-->
+<!--                      ]-->
+<!--                }" :options="chartOptions" class="w-full md:w-30rem"/>-->
+<!--            </div>-->
+<!--          </div>-->
 
-          <Timeline :value="getEvents(data)" align="alternate" class="customized-timeline">
-            <template #marker="slotProps">
-                <span
-                    class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
-                    :style="{ backgroundColor: slotProps.item.color }">
-                    <i :class="slotProps.item.icon"></i>
-                </span>
-            </template>
-            <template #content="slotProps">
-              <Card class="mt-3 surface-200">
-                <template #title>
-                  {{ slotProps.item.status }}
-                </template>
-                <template #subtitle>
-                  {{ slotProps.item.date }}
-                </template>
-                <template #content>
-                  <!--                    <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-1" />-->
-                  <p v-for="v in Object.values(slotProps.item.rest)">
-                    {{ v }}
-                  </p>
+<!--          <Accordion :activeIndex="-1" class="mt-5">-->
+<!--            <AccordionTab header="Все события по текущей дате" :pt="{-->
+<!--              headerAction: {-->
+<!--                class: 'bg-primary-800'-->
+<!--              },-->
+<!--              content: {-->
+<!--                class: 'surface-100'-->
+<!--              }-->
+<!--            }">-->
+<!--              <div v-for="infoItem in info">-->
+<!--                <p v-for="[k,v] in Object.entries(infoItem)">-->
+<!--                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>-->
+<!--                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>-->
+<!--                  <span v-else>{{ v }}</span>-->
+<!--                </p>-->
+<!--                <Divider/>-->
+<!--              </div>-->
+<!--            </AccordionTab>-->
+<!--          </Accordion>-->
+<!--        </Tabpanel>-->
+<!--        <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date" contentStyle="width: 95vw">-->
+<!--          <div class="flex justify-content-between">-->
+<!--            <p>Вошел: {{ formateDate(data).enter }}</p>-->
+<!--            <p>Вышел: {{ formateDate(data).exit }}</p>-->
+<!--            <p>{{ formateDate(data).late.str }}</p>-->
+<!--            <p>Работал: {{ transformDataToHuman(formateDate(data).worked) }}</p>-->
+<!--            <p v-if="formateDate(data).notExisted">Отсутствовал:-->
+<!--              {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}</p>-->
+<!--            <p v-else>Не выходил</p>-->
 
-                  <!--                    <Button label="Read more" text></Button>-->
-                </template>
-              </Card>
-            </template>
-          </Timeline>
+<!--            <div class="card flex justify-content-center">-->
+<!--              <Chart type="pie" :data="{-->
+<!--                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],-->
+<!--                  datasets: [-->
+<!--                      {-->
+<!--                        data: getChartOptions(formateDate(data)),-->
+<!--                        backgroundColor: ['#00FF69FF', '#FF0045FF'],-->
+<!--                        hoverBackgroundColor: '#00C2FFFF'-->
+<!--                      }-->
+<!--                      ]-->
+<!--                }" :options="chartOptions" class="w-full md:w-30rem"/>-->
+<!--            </div>-->
+<!--          </div>-->
 
-          <Accordion :activeIndex="-1" class="mt-5">
-            <AccordionTab header="Все события по текущей дате" :pt="{
-              headerAction: {
-                class: 'bg-primary-800'
-              },
-              content: {
-                class: 'surface-100'
-              }
-            }">
-              <div v-for="infoItem in info.filter(i => i.date === date)">
-                <p v-for="[k,v] in Object.entries(infoItem)">
-                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>
-                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>
-                  <span v-else>{{ v }}</span>
-                </p>
-                <Divider/>
-              </div>
-            </AccordionTab>
-          </Accordion>
-        </Tabpanel>
-      </Tabview>
+<!--          <Timeline :value="getEvents(data)" align="alternate" class="customized-timeline">-->
+<!--            <template #marker="slotProps">-->
+<!--                <span-->
+<!--                    class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"-->
+<!--                    :style="{ backgroundColor: slotProps.item.color }">-->
+<!--                    <i :class="slotProps.item.icon"></i>-->
+<!--                </span>-->
+<!--            </template>-->
+<!--            <template #content="slotProps">-->
+<!--              <Card class="mt-3 surface-200">-->
+<!--                <template #title>-->
+<!--                  {{ slotProps.item.status }}-->
+<!--                </template>-->
+<!--                <template #subtitle>-->
+<!--                  {{ slotProps.item.date }}-->
+<!--                </template>-->
+<!--                <template #content>-->
+<!--                  &lt;!&ndash;                    <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-1" />&ndash;&gt;-->
+<!--                  <p v-for="v in Object.values(slotProps.item.rest)">-->
+<!--                    {{ v }}-->
+<!--                  </p>-->
+
+<!--                  &lt;!&ndash;                    <Button label="Read more" text></Button>&ndash;&gt;-->
+<!--                </template>-->
+<!--              </Card>-->
+<!--            </template>-->
+<!--          </Timeline>-->
+
+<!--          <Accordion :activeIndex="-1" class="mt-5">-->
+<!--            <AccordionTab header="Все события по текущей дате" :pt="{-->
+<!--              headerAction: {-->
+<!--                class: 'bg-primary-800'-->
+<!--              },-->
+<!--              content: {-->
+<!--                class: 'surface-100'-->
+<!--              }-->
+<!--            }">-->
+<!--              <div v-for="infoItem in info.filter(i => i.date === date)">-->
+<!--                <p v-for="[k,v] in Object.entries(infoItem)">-->
+<!--                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>-->
+<!--                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>-->
+<!--                  <span v-else>{{ v }}</span>-->
+<!--                </p>-->
+<!--                <Divider/>-->
+<!--              </div>-->
+<!--            </AccordionTab>-->
+<!--          </Accordion>-->
+<!--        </Tabpanel>-->
+<!--      </Tabview>-->
     </template>
   </DataTable>
 </template>
