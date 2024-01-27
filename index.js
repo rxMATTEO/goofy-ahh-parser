@@ -42,66 +42,40 @@ function peopleParser(startIndex, peopleArray, parser, initial = true) {
   };
   let i = startIndex;
   const noNameBlocks = ['2023', new Date().getFullYear().toString(), 'Помещение', 'Дата', 'Стр', "Выход", "Вход",];
+  const tr = parser.window.document.querySelectorAll('tr');
   while (true) {
-    const infoBlock = (parser.window.document.querySelectorAll('tr')[i]);
+    const infoBlock = tr[i];
     if (!infoBlock) return peopleArray; // end of method
-    if (!initial && !noNameBlocks.find(block => infoBlock.textContent.trim().toLowerCase().includes(block.toLowerCase())) && infoBlock.length > 0) {
-      if (!chel.firstName) {
-        const {firstName, lastName, middleName} = peopleArray[peopleArray.length - 1];
+    const textContent = (tr[i].textContent);
+    if (noNameBlocks.find(block => textContent.trim().toLowerCase().includes(block.toLowerCase()))) {
+      chel.info.push( Array.from(infoBlock.querySelectorAll('td').values()).map(i => i.textContent) );
+    } else {
+      if(i > 100) {
+        debugger;
+      }
+      if(!initial) {
+        peopleArray.push(chel);
+        const [firstName, lastName] = textContent.split(' ');
+
+        chel = {
+          info: [],
+          firstName: firstName,
+          lastName: lastName,
+          middleName: tr[i + 1].textContent
+        }
+      }
+      if(!chel.firstName || !chel.lastName && initial){
+        const [firstName, lastName] = textContent.split(' ');
         chel.firstName = firstName;
         chel.lastName = lastName;
-        chel.middleName = middleName;
-      }
-      const foundChel = peopleArray.find(ch => chel.firstName === ch.firstName && chel.lastName === ch.lastName && chel.middleName === ch.middleName);
-      if (foundChel) {
-        foundChel.info.push(...chel.info);
-      } else {
-        peopleArray.push(chel);
-      }
-      chel = {
-        info: [],
-      }
-      const [first, last] = (parser.window.document.querySelectorAll('tr')[i - 1]?.textContent[0].split(' '));
-      chel.firstName = last;
-      chel.lastName = first;
-      chel.middleName = infoBlock[0];
-    } else {
-      // if (i === startIndex) {
-      // const infoBlock = (parser.window.document.querySelectorAll('tr')[i].textContent);
-      // chel.page = infoBlock[0];
-      // chel.pageNumber = infoBlock[0].split(' ')[1];
-      // } else if (i === startIndex + 1) {
-      // chel.room = infoBlock[1];
-      // } else if (i === startIndex + 2) {
-      // chel.rows = infoBlock;
-      if (initial && i === startIndex + 1) {
-        chel.middleName = infoBlock.textContent;
-      }
-      if (initial && i === startIndex) {
-        const [first, last] = infoBlock.textContent.split(' ');
-        chel.lastName = first;
-        chel.firstName = last;
-      } else if (!infoBlock.toString().trim().startsWith('Стр.')) {
-        chel.info.push(infoBlock);
-      } else {
-        if (!chel.firstName) {
-          const {firstName, lastName, middleName} = peopleArray[peopleArray.length - 1];
-          chel.firstName = firstName;
-          chel.lastName = lastName;
-          chel.middleName = middleName;
-        }
-        const foundChel = peopleArray.find(ch => chel.firstName === ch.firstName && chel.lastName === ch.lastName && chel.middleName === ch.middleName);
-        if (foundChel) {
-          foundChel.info.push(...chel.info);
-        } else {
-          peopleArray.push(chel);
-        }
-        break;
+        chel.middleName = tr[i + 1].textContent;
+        initial = false;
+        i++;
       }
     }
     i += 1;
   }
-  return peopleParser(i, peopleArray, parser, false);
+  return peopleArray;
 }
 
 function parsePeople(htmlString) {
@@ -119,6 +93,7 @@ app.get('/api/people', async function (req, res) {
   // const result = await mammoth.convertToHtml({path: 'stuff.docx'});
   res.send(parsePeople(DOC));
 });
+
 
 app.get('/', async function (req, res) {
   const result = await mammoth.convertToHtml({path: 'stuff.docx'});
