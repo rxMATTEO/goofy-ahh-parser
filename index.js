@@ -36,7 +36,7 @@ function parseInfo(htmlString) {
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
 }
 
-function peopleParser(startIndex, peopleArray, parser, initial = true){
+function peopleParser(startIndex, peopleArray, parser, initial = true) {
   let chel = {
     info: [],
   };
@@ -45,23 +45,21 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
   while (true) {
     const infoBlock = (parser.window.document.querySelectorAll('tr')[i]?.textContent);
     const infoBlockRaw = (parser.window.document.querySelectorAll('tr')[i]);
-    if(infoBlock == '') {
+    if (infoBlock == '') {
       i++
       continue;
-    };
-    if(!infoBlock) return peopleArray; // end of method
+    }
+    if (!infoBlock) return peopleArray; // end of method
 
-    // !TODO! HERE NOT SOLVED. NOT WORKING WHEN FIRST NAME IN ONE LINE FIXME
-
-    if(!initial && !noNameBlocks.find(block => infoBlock.trim().toLowerCase().includes(block.toLowerCase())) && infoBlock.length > 0) {
-      if(!chel.firstName) {
-        const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
+    if (!initial && !noNameBlocks.find(block => infoBlock.trim().toLowerCase().includes(block.toLowerCase())) && infoBlock.length > 0) {
+      if (!chel.firstName) {
+        const {firstName, lastName, middleName} = peopleArray[peopleArray.length - 1];
         chel.firstName = firstName;
         chel.lastName = lastName;
         chel.middleName = middleName;
       }
       const foundChel = peopleArray.find(ch => chel.firstName === ch.firstName && chel.lastName === ch.lastName && chel.middleName === ch.middleName);
-      if(foundChel){
+      if (foundChel) {
         foundChel.info.push(...chel.info);
       } else {
         peopleArray.push(chel);
@@ -72,15 +70,13 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
       const [first, scnd, prollyThrd] = (parser.window.document.querySelectorAll('tr')[i]?.textContent).split(' ');
 
       const next = parser.window.document.querySelectorAll('tr')[i + 1]?.textContent;
-      if(!noNameBlocks.find(block => next.trim().toLowerCase().includes(block.toLowerCase()))){
-      chel.middleName = parser.window.document.querySelectorAll('tr')[++i]?.textContent; // TODO MB ITS IT
+      if (!noNameBlocks.find(block => next.trim().toLowerCase().includes(block.toLowerCase()))) {
+        chel.middleName = parser.window.document.querySelectorAll('tr')[++i]?.textContent;
       } else {
         chel.middleName = prollyThrd;
       }
       chel.firstName = scnd;
       chel.lastName = first;
-
-      // !!! TODO END OF NOT SOLVED
 
     } else {
       if (i === startIndex) {
@@ -100,14 +96,14 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
       } else if (!infoBlock.toString().trim().startsWith('Стр.')) {
         chel.info.push(_infoBlockToArr(infoBlockRaw));
       } else {
-        if(!chel.firstName) {
-          const { firstName, lastName, middleName } = peopleArray[peopleArray.length - 1];
+        if (!chel.firstName) {
+          const {firstName, lastName, middleName} = peopleArray[peopleArray.length - 1];
           chel.firstName = firstName;
           chel.lastName = lastName;
           chel.middleName = middleName;
         }
         const foundChel = peopleArray.find(ch => chel.firstName === ch.firstName && chel.lastName === ch.lastName && chel.middleName === ch.middleName);
-        if(foundChel){
+        if (foundChel) {
           foundChel.info.push(...chel.info);
         } else {
           peopleArray.push(chel);
@@ -120,8 +116,8 @@ function peopleParser(startIndex, peopleArray, parser, initial = true){
   return peopleParser(i, peopleArray, parser, false);
 }
 
-function _infoBlockToArr(infoBlock){
-  return Array.from(infoBlock.querySelectorAll('td').values()).map( i => i.textContent );
+function _infoBlockToArr(infoBlock) {
+  return Array.from(infoBlock.querySelectorAll('td').values()).map(i => i.textContent);
 }
 
 function parsePeople(htmlString) {
