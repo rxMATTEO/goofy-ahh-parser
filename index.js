@@ -16,7 +16,7 @@ app.use(express.json());
 let DOC = '';
 (async () => {
   const windows1251 = await import('windows-1251');
-  DOC = windows1251.decode(readFileSync('ACTUAL.htm'));
+  DOC = windows1251.decode(readFileSync('docs/current/1706385615121.htm'));
 })();
 
 
@@ -127,18 +127,15 @@ function parsePeople(htmlString) {
 }
 
 app.get('/api/info', async function (req, res) {
-  // const result = await mammoth.convertToHtml({path: 'stuff.docx'});
   res.send(parseInfo((DOC)));
 });
 
 app.get('/api/people', async function (req, res) {
-  // const result = await mammoth.convertToHtml({path: 'stuff.docx'});
   res.send(parsePeople(DOC));
 });
 
 
 app.get('/', async function (req, res) {
-  const result = await mammoth.convertToHtml({path: 'stuff.docx'});
   const file = readFileSync('dist/index.html');
   res.header('Content-Type', 'text/html');
   res.send(file);
@@ -153,30 +150,7 @@ app.post('/api/create', upload.single('rtf'), (req, res) => {
   if (!req.file) {
     return res.status(400).send('Где файл? Нету.');
   }
-  writeFileSync('ri.rtf', req.file.buffer);
-
-  exec('npm run parse', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-    exec('npm run iconv', (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-      res.sendFile('./test.txt', {root: '.'});
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-      }
-    });
-
-    if (stderr) {
-      console.error(`stderr: ${stderr}`);
-    }
-  });
+  const file = readFileSync(req.file.path);
 });
 
 app.get('/api/ping', function (req, res) {
