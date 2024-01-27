@@ -24,15 +24,14 @@ let DOC = '';
 function parseInfo(htmlString) {
   const parser = new jsdom.JSDOM(htmlString);
   const events = (parser.window.document.querySelectorAll('tr')[0]);
-  const dates = [(parser.window.document.querySelectorAll('tr')[2]) ];
+  const dates = (parser.window.document.querySelectorAll('tr')[2]);
   const time = (parser.window.document.querySelectorAll('tr')[3]);
-  console.log(dates, time)
-  // return {
-  //   eventsType: events.querySelector('u').textContent,
-  //   creationDate: events.slice(1).join(': '),
-  //   dates: dates.slice(1).join(''),
-  //   time: time.slice(1).join('')
-  // }
+  return {
+    eventsType: events.querySelector('u').textContent,
+    creationDate: Array.from(dates.querySelectorAll('b').values()).map(i => i.textContent).join(' '),
+    dates: events.querySelectorAll('td')[1].textContent,
+    time: `Время: ${time.querySelectorAll('b')[1].textContent} ${time.querySelectorAll('b')[3].textContent}`
+  }
   // return parser.window.document.querySelectorAll('p')[0].textContent;
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
 }
