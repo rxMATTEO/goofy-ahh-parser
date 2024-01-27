@@ -438,6 +438,7 @@ const confirmUploadNew = (event) => {
              :value="people" paginator :rows="people?.length" removableSort
              :rowsPerPageOptions="rowsPerPage" :loading="!people" showGridlines
              :filterDisplay="'row'" :globalFilterFields="['firstName', 'lastName', 'middleName']"
+             scrollable scrollHeight="900px"
              :pt="{
                rowExpansionCell: {
                  class: 'p-0'
@@ -481,11 +482,8 @@ const confirmUploadNew = (event) => {
         <Column style="width: 73px; height: 73px">
         </Column>
         <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
-          <template #header>
-            {{ null }}
-          </template>
-          <template #body="{data: [_, data]}">
-            <p>Вошел: {{ formateDate(data).enter }}</p>
+          <template #body="{data: [date, data]}">
+            {{ date }}
           </template>
         </Column>
         <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
