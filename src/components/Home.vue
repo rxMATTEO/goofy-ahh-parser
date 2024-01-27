@@ -420,7 +420,7 @@ const confirmUploadNew = (event) => {
       </div>
 
       <div>
-        Сотрудников: {{ people.length }}
+        Сотрудников: {{ people?.length }}
       </div>
 
       <div>
