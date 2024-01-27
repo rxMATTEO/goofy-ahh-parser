@@ -16,8 +16,7 @@ app.use(express.json());
 let DOC = '';
 (async () => {
   const windows1251 = await import('windows-1251');
-  const DOC1 = windows1251.decode(readFileSync('ACTUAL.htm'));
-  DOC = DOC1;
+  DOC = windows1251.decode(readFileSync('ACTUAL.htm'));
 })();
 
 
@@ -42,10 +41,11 @@ function peopleParser(startIndex, peopleArray, parser, initial = true) {
   };
   let i = startIndex;
   const noNameBlocks = ['2023', new Date().getFullYear().toString(), 'Помещение', 'Дата', 'Стр', "Выход", "Вход",];
+  const trs = parser.window.document.querySelectorAll('tr');
   while (true) {
-    const infoBlock = (parser.window.document.querySelectorAll('tr')[i]?.textContent);
-    const infoBlockRaw = (parser.window.document.querySelectorAll('tr')[i]);
-    if (infoBlock == '') {
+    const infoBlock = (trs[i]?.textContent);
+    const infoBlockRaw = (trs[i]);
+    if (infoBlock === '') {
       i++;
       continue;
     }
@@ -67,11 +67,11 @@ function peopleParser(startIndex, peopleArray, parser, initial = true) {
       chel = {
         info: [],
       }
-      const [first, scnd, prollyThrd] = (parser.window.document.querySelectorAll('tr')[i]?.textContent).split(' ');
+      const [first, scnd, prollyThrd] = (trs[i]?.textContent).split(' ');
 
-      const next = parser.window.document.querySelectorAll('tr')[i + 1]?.textContent;
+      const next = trs[i + 1]?.textContent;
       if (!noNameBlocks.find(block => next.trim().toLowerCase().includes(block.toLowerCase()))) {
-        chel.middleName = parser.window.document.querySelectorAll('tr')[++i]?.textContent;
+        chel.middleName = trs[++i]?.textContent;
       } else {
         chel.middleName = prollyThrd;
       }
@@ -80,7 +80,7 @@ function peopleParser(startIndex, peopleArray, parser, initial = true) {
 
     } else {
       if (i === startIndex) {
-        const infoBlock = (parser.window.document.querySelectorAll('tr')[i]?.textContent);
+        const infoBlock = (trs[i]?.textContent);
         chel.page = infoBlock;
         chel.pageNumber = infoBlock.split(' ')[1];
       } else if (i === startIndex + 1) {
