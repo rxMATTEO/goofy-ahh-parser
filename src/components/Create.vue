@@ -5,13 +5,13 @@ import RtfUpload from "./RtfUpload.vue";
 const steps = computed(() => {
   return [
     {
-      label: 'Загрузка rtf',
+      label: 'Загрузка htm документа',
     },
     {
-      label: 'Формирование docx',
+      label: 'Отправка на сервер',
     },
     {
-      label: 'Загрузка rtf',
+      label: 'Парсинг на сервере',
     },
   ]
 });

@@ -2,7 +2,6 @@
 import {useToast} from "primevue/usetoast";
 import {computed, inject, ref} from "vue";
 import {usePrimeVue} from "primevue/config";
-import * as windows1252 from 'windows-1252';
 const props = defineProps<{
   stepIndex: number
 }>();
@@ -36,8 +35,6 @@ const uploadEvent = (callback) => {
 };
 
 const onTemplatedUpload = (event) => {
-  const text = event.xhr.response;
-  console.log(windows1252.decode(windows1252.encode(text)))
   toast.add({severity: "info", summary: "Ура!", detail: "Файл загружен", life: 3000});
   emit('update:stepIndex', props.stepIndex + 1);
 };
@@ -58,9 +55,9 @@ const formatSize = (bytes) => {
 </script>
 
 <template>
-  <FileUpload name="rtf" :url="`${api}/create`" @upload="onTemplatedUpload($event)" :multiple="false" accept=".docx"
+  <FileUpload name="rtf" :url="`${api}/create`" @upload="onTemplatedUpload($event)" :multiple="false" accept=".htm"
               :maxFileSize="1000000" @select="onSelectedFiles" :auto="true"
-              invalidFileTypeMessage="{0} - не docx документ">
+              invalidFileTypeMessage="{0} - не htm документ">
     <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
       <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
         <div class="flex gap-2">
@@ -115,7 +112,7 @@ const formatSize = (bytes) => {
     <template #empty>
       <div class="flex align-items-center justify-content-center flex-column">
         <i class="pi pi-cloud-upload border-2 border-circle p-5 text-8xl text-400 border-400"/>
-        <p class="mt-4 mb-0">Брось сюда html документ для его загрузки или нажми кнопку сверху.</p>
+        <p class="mt-4 mb-0">Брось сюда htm документ для его загрузки или нажми кнопку сверху.</p>
       </div>
     </template>
   </FileUpload>

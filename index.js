@@ -15,9 +15,13 @@ app.use(express.json());
 
 let DOC = '';
 (async () => {
-  const windows1251 = await import('windows-1251');
-  DOC = windows1251.decode(readFileSync('docs/current/1706385615121.htm'));
+  DOC = await decodeGoofyDoc(readFileSync('docs/current/1706385615121.htm'));
 })();
+
+async function decodeGoofyDoc(doc){
+  const windows1251 = await import('windows-1251');
+  return windows1251.decode(doc);
+}
 
 
 function parseInfo(htmlString) {
@@ -150,7 +154,8 @@ app.post('/api/create', upload.single('rtf'), (req, res) => {
   if (!req.file) {
     return res.status(400).send('Где файл? Нету.');
   }
-  const file = readFileSync(req.file.path);
+  const file = req.file.buffer.toString();
+  console.log(file.toString())
 });
 
 app.get('/api/ping', function (req, res) {
