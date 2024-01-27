@@ -28,9 +28,9 @@ function parseInfo(htmlString) {
   const time = (parser.window.document.querySelectorAll('tr')[3]);
   return {
     eventsType: events.querySelector('u').textContent,
-    creationDate: Array.from(dates.querySelectorAll('b').values()).map(i => i.textContent).join(' '),
-    dates: events.querySelectorAll('td')[1].textContent,
-    time: `Время: ${time.querySelectorAll('b')[1].textContent} ${time.querySelectorAll('b')[3].textContent}`
+    dates: _infoBlockToArr(dates).slice(1).join(' '),
+    creationDate: events.querySelectorAll('td')[1].textContent,
+    time: `${time.querySelectorAll('b')[1].textContent} ${time.querySelectorAll('b')[3].textContent}`
   }
   // return parser.window.document.querySelectorAll('p')[0].textContent;
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
@@ -46,7 +46,7 @@ function peopleParser(startIndex, peopleArray, parser, initial = true) {
     const infoBlock = (parser.window.document.querySelectorAll('tr')[i]?.textContent);
     const infoBlockRaw = (parser.window.document.querySelectorAll('tr')[i]);
     if (infoBlock == '') {
-      i++
+      i++;
       continue;
     }
     if (!infoBlock) return peopleArray; // end of method

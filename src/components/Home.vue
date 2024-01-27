@@ -51,6 +51,7 @@ onMounted(async () => {
     error.value = 'Не удалось подключиться к серверу. Попробуй его запустить: npm run server';
   }
   info.value = (await axios.get(`${api}/info`)).data;
+  console.log(info.value);
   console.log(((await axios.get(`${api}/people`)).data));
   people.value = (((await axios.get(`${api}/people`)).data) as Person[]).map(
       (person: Person) => {
@@ -409,7 +410,7 @@ const confirmUploadNew = (event) => {
         Рабочих дней: {{ info.workDays }}
       </div>
       <div>
-        {{ `Отчет создан: ${info.creationDate.split(' ')[2]} ${info.creationDate.split(' ')[3]}` }}
+        {{ info.creationDate.split(' ').slice(0, 2).join(' ') + info.creationDate.split(' ')[2] + ':' + info.creationDate.split(' ').slice(3).join(' ') }}
       </div>
       <div>
         Период : {{ info.dates }}
