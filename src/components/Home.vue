@@ -102,8 +102,8 @@ onMounted(async () => {
     return chel;
   });
   people.value.forEach(chel => {
-    if(Object.keys(chel.dates).length > 0) {
-      chel.fullFormatted = Object.entries(chel.dates).map(([date,data]) => formateDate(data));
+    if (Object.keys(chel.dates).length > 0) {
+      chel.fullFormatted = Object.entries(chel.dates).map(([date, data]) => formateDate(data));
       chel.median = normilizeDate(convertMinsToHrsMins(median(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)))).str;
       chel.avg = normilizeDate(convertMinsToHrsMins(avg(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)).toFixed(0))).str;
       chel.lateTimes = (late(Object.entries(chel.dates).map(([date, data]) => {
@@ -113,7 +113,7 @@ onMounted(async () => {
       chel.fullInfo = getStatsForAll(chel.dates);
     }
   });
-  people.value = people.value.filter( chel => chel.info.length > 0 );
+  people.value = people.value.filter(chel => chel.info.length > 0);
   info.value.workDays = Math.max(...people.value?.map(chel => Object.entries(chel.dates).length));
   console.log(people.value);
 });
@@ -220,11 +220,11 @@ function formateDate(info: Info[]) {
     sum.minutes += minutes;
     sum.hours += hours;
   }
-  const sumNormilized = convertMinsToHrsMins( (sum.hours * 60) + sum.minutes );
+  const sumNormilized = convertMinsToHrsMins((sum.hours * 60) + sum.minutes);
   // console.log(new Date(allexitsSum))
 
   const result = getResultFromDate(Math.abs(getDate(firstEnter) - getDate("9:00")));
-  getDate(firstEnter) - getDate("9:00") < 0 ? result.str = `Пришел раньше на:`: result.str = 'Опоздал на:';
+  getDate(firstEnter) - getDate("9:00") < 0 ? result.str = `Пришел раньше на:` : result.str = 'Опоздал на:';
   result.str += ` ${result.hours} часов(а) ${result.minutes} минут`;
   const result2 = getResultFromDate(getDate(firstEnter) - getDate("9:00"))
   result2.str = result.str;
@@ -265,12 +265,12 @@ function getStatsForAll(dates: Info[]) {
       }
     };
   });
-  const worked = normilizeDate(convertMinsToHrsMins((val.worked.hours * 60) + val.worked.minutes ));
+  const worked = normilizeDate(convertMinsToHrsMins((val.worked.hours * 60) + val.worked.minutes));
   const lateHours = (val.late.hours < 0) ? val.late.hours * -1 : val.late.hours;
   const lateMinutes = (val.late.minutes < 0) ? val.late.minutes * -1 : val.late.minutes;
-  const late = normilizeDate(convertMinsToHrsMins((lateHours * 60) + lateMinutes ));
+  const late = normilizeDate(convertMinsToHrsMins((lateHours * 60) + lateMinutes));
   late.str = (val.late.minutes < 0) || (val.late.hours < 0) ? `Пришел раньше на: ${late.hours} часов(а) ${late.minutes} минут` : `Опоздал на: ${late.hours} часов(а) ${late.minutes} минут`;
-  const notExisted = normilizeDate(convertMinsToHrsMins((val.notExisted.hours * 60) + val.notExisted.minutes ));
+  const notExisted = normilizeDate(convertMinsToHrsMins((val.notExisted.hours * 60) + val.notExisted.minutes));
   val.worked = worked;
   val.late = late;
   val.notExisted = notExisted;
@@ -281,7 +281,7 @@ function getDate(date: string) {
   return new Date(0, 0, 0, date.split(':')[0], date.split(':')[1]);
 }
 
-function normilizeDate(date: string){
+function normilizeDate(date: string) {
   const hours = +date.split(':')[0];
   const minutes = +date.split(':')[1];
   return {
@@ -303,7 +303,7 @@ function getResultFromDate(date: string) {
   };
 }
 
-function convertMinsToHrsMins (minutes) {
+function convertMinsToHrsMins(minutes) {
   let h = Math.floor(minutes / 60);
   let m = minutes % 60;
   h = h < 10 ? '0' + h : h;
@@ -403,7 +403,7 @@ const confirmUploadNew = (event) => {
       {{ error }}
     </div>
     <div v-if="info" class="flex justify-content-between align-items-center">
-      <img src="/logo.svg" style="height: 24px" />
+      <img src="/logo.svg" style="height: 24px"/>
       <div>
         Рабочих дней: {{ info.workDays }}
       </div>
@@ -438,20 +438,25 @@ const confirmUploadNew = (event) => {
              :value="people" paginator :rows="people?.length" removableSort
              :rowsPerPageOptions="rowsPerPage" :loading="!people" showGridlines
              :filterDisplay="'row'" :globalFilterFields="['firstName', 'lastName', 'middleName']"
-             scrollable scrollHeight="900px"
+             scrollable scrollHeight="90vh"
              :pt="{
                rowExpansionCell: {
                  class: 'p-0'
-               }
+               },
+                       table: {
+          style: {
+            'table-layout': 'fixed'
+          }
+        }
              }"
   >
     <template #header>
       <div class="flex justify-content-end align-items-center gap-2">
-<!--        Глобальный поиск:-->
-<!--        <span class="p-input-icon-left">-->
-<!--                <i class="pi pi-search"/>-->
-<!--                <InputText v-model="filters['global'].value" placeholder="Поиск"/>-->
-<!--            </span>-->
+        <!--        Глобальный поиск:-->
+        <!--        <span class="p-input-icon-left">-->
+        <!--                <i class="pi pi-search"/>-->
+        <!--                <InputText v-model="filters['global'].value" placeholder="Поиск"/>-->
+        <!--            </span>-->
         <Button text icon="pi pi-plus" label="Раскрыть все" @click="expandAll"/>
         <Button text icon="pi pi-minus" label="Свернуть все" @click="collapseAll"/>
       </div>
@@ -459,186 +464,192 @@ const confirmUploadNew = (event) => {
 
     <Column expander style="width: 5rem"/>
     <Column v-for="[k,{header, field}] in Object.entries(columns)" :header="header" :field="field" sortable :key="k"
-            :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+            :style="{width: '257px'}">
       <template #body="{data: {info: [event]}}" v-if="k === 'info'">
         <p>{{ event?.date || "" }} {{ event?.keyLabel || "" }} {{ event?.time || "" }} {{ event?.exit || "" }}
           {{ event?.type || "" }} {{ event?.pass || "" }} ...</p><!--empty cuz expander-->
       </template>
-<!--      <template #filter="{filterModel, filterCallback}">-->
-<!--        <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"-->
-<!--                   :placeholder="`Искать по ${v}`"/>-->
-<!--      </template>-->
+      <!--      <template #filter="{filterModel, filterCallback}">-->
+      <!--        <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"-->
+      <!--                   :placeholder="`Искать по ${v}`"/>-->
+      <!--      </template>-->
     </Column>
 
     <template #expansion="{ data: {info,dates} }">
-      {{Object.values(dates)[0]}}
       <DataTable :value="Object.entries(dates)" :pt="{
         table: {
           style: {
-            'table-layout': 'fixed'
+            'table-layout': 'fixed',
+            'overflow': 'hidden'
           }
         }
       }">
-        <Column style="width: 73px; height: 73px">
+        <Column style="width: 79px; height: 34px">
         </Column>
-        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+        <Column :style="{width: `257px`}">
           <template #body="{data: [date, data]}">
             {{ date }}
           </template>
         </Column>
-        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
-          <template #body="{data}">
-            {{data[0]}}
+        <Column :style="{width: `257px`}">
+          <template #body="{data: [_, data]}">
+            {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}
           </template>
         </Column>
-        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+        <Column :style="{width: `257px`}">
           <template #body="{data: [_, data]}">
-            <p>Вошел: {{ formateDate(data).enter }}</p>
+            {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}
           </template>
         </Column>
-        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+        <Column :style="{width: `257px`}">
           <template #body="{data: [_, data]}">
-            <p>Вошел: {{ formateDate(data).enter }}</p>
+            {{ transformDataToHuman(formateDate(data).worked) }}
           </template>
         </Column>
-        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+        <Column :style="{width: `257px`}">
           <template #body="{data: [_, data]}">
-            <p>Вошел: {{ formateDate(data).enter }}</p>
+            {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}
           </template>
         </Column>
-        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+        <Column :style="{width: `257px`}">
           <template #body="{data: [_, data]}">
-            <p>Вошел: {{ formateDate(data).enter }}</p>
+            <p>{{ formateDate(data).late.str }}</p>
           </template>
         </Column>
-        <Column :style="{width: `${1 / Object.keys(columns).length * 100}%`}">
+        <Column :style="{width: `257px`}">
           <template #body="{data: [_, data]}">
-            <p>Вошел: {{ formateDate(data).enter }}</p>
+            <p>{{ data.filter( (date) => date.type === 'ВХОД' ).length }}</p>
           </template>
         </Column>
       </DataTable>
-<!--      <Tabview :scrollable="true" style="width: 95vw" :pt="{-->
-<!--        nextButton: 'bg-primary',-->
-<!--        previousButton: 'bg-primary',-->
-<!--      }">-->
-<!--        <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">-->
-<!--          <div class="flex justify-content-between">-->
-<!--&lt;!&ndash;            <p>{{ getStatsForAll(dates).late.str }}</p>&ndash;&gt;-->
-<!--            <p>Работал: {{ getStatsForAll(dates).worked.hours }} часов(а) {{getStatsForAll(dates).worked.minutes}} минут</p>-->
-<!--            <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:-->
-<!--              {{-->
-<!--                `${getStatsForAll(dates).notExisted.hours} часов(а) ${getStatsForAll(dates).notExisted.minutes} минут`-->
-<!--              }}-->
-<!--            </p>-->
-<!--            <p v-else>Не выходил</p>-->
+      <!--      <Tabview :scrollable="true" style="width: 95vw" :pt="{-->
+      <!--        nextButton: 'bg-primary',-->
+      <!--        previousButton: 'bg-primary',-->
+      <!--      }">-->
+      <!--        <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">-->
+      <!--          <div class="flex justify-content-between">-->
+      <!--&lt;!&ndash;            <p>{{ getStatsForAll(dates).late.str }}</p>&ndash;&gt;-->
+      <!--            <p>Работал: {{ getStatsForAll(dates).worked.hours }} часов(а) {{getStatsForAll(dates).worked.minutes}} минут</p>-->
+      <!--            <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:-->
+      <!--              {{-->
+      <!--                `${getStatsForAll(dates).notExisted.hours} часов(а) ${getStatsForAll(dates).notExisted.minutes} минут`-->
+      <!--              }}-->
+      <!--            </p>-->
+      <!--            <p v-else>Не выходил</p>-->
 
-<!--            <div class="card flex justify-content-center">-->
-<!--              <Chart type="pie" :data="{-->
-<!--                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],-->
-<!--                  datasets: [-->
-<!--                      {-->
-<!--                        data: getChartOptions(getStatsForAll(dates)),-->
-<!--                        backgroundColor: ['#00FF69FF', '#FF0045FF'],-->
-<!--                        hoverBackgroundColor: '#00C2FFFF'-->
-<!--                      }-->
-<!--                      ]-->
-<!--                }" :options="chartOptions" class="w-full md:w-30rem"/>-->
-<!--            </div>-->
-<!--          </div>-->
+      <!--            <div class="card flex justify-content-center">-->
+      <!--              <Chart type="pie" :data="{-->
+      <!--                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],-->
+      <!--                  datasets: [-->
+      <!--                      {-->
+      <!--                        data: getChartOptions(getStatsForAll(dates)),-->
+      <!--                        backgroundColor: ['#00FF69FF', '#FF0045FF'],-->
+      <!--                        hoverBackgroundColor: '#00C2FFFF'-->
+      <!--                      }-->
+      <!--                      ]-->
+      <!--                }" :options="chartOptions" class="w-full md:w-30rem"/>-->
+      <!--            </div>-->
+      <!--          </div>-->
 
-<!--          <Accordion :activeIndex="-1" class="mt-5">-->
-<!--            <AccordionTab header="Все события по текущей дате" :pt="{-->
-<!--              headerAction: {-->
-<!--                class: 'bg-primary-800'-->
-<!--              },-->
-<!--              content: {-->
-<!--                class: 'surface-100'-->
-<!--              }-->
-<!--            }">-->
-<!--              <div v-for="infoItem in info">-->
-<!--                <p v-for="[k,v] in Object.entries(infoItem)">-->
-<!--                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>-->
-<!--                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>-->
-<!--                  <span v-else>{{ v }}</span>-->
-<!--                </p>-->
-<!--                <Divider/>-->
-<!--              </div>-->
-<!--            </AccordionTab>-->
-<!--          </Accordion>-->
-<!--        </Tabpanel>-->
-<!--        <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date" contentStyle="width: 95vw">-->
-<!--          <div class="flex justify-content-between">-->
-<!--            <p>Вошел: {{ formateDate(data).enter }}</p>-->
-<!--            <p>Вышел: {{ formateDate(data).exit }}</p>-->
-<!--            <p>{{ formateDate(data).late.str }}</p>-->
-<!--            <p>Работал: {{ transformDataToHuman(formateDate(data).worked) }}</p>-->
-<!--            <p v-if="formateDate(data).notExisted">Отсутствовал:-->
-<!--              {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}</p>-->
-<!--            <p v-else>Не выходил</p>-->
+      <!--          <Accordion :activeIndex="-1" class="mt-5">-->
+      <!--            <AccordionTab header="Все события по текущей дате" :pt="{-->
+      <!--              headerAction: {-->
+      <!--                class: 'bg-primary-800'-->
+      <!--              },-->
+      <!--              content: {-->
+      <!--                class: 'surface-100'-->
+      <!--              }-->
+      <!--            }">-->
+      <!--              <div v-for="infoItem in info">-->
+      <!--                <p v-for="[k,v] in Object.entries(infoItem)">-->
+      <!--                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>-->
+      <!--                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>-->
+      <!--                  <span v-else>{{ v }}</span>-->
+      <!--                </p>-->
+      <!--                <Divider/>-->
+      <!--              </div>-->
+      <!--            </AccordionTab>-->
+      <!--          </Accordion>-->
+      <!--        </Tabpanel>-->
+      <!--        <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date" contentStyle="width: 95vw">-->
+      <!--          <div class="flex justify-content-between">-->
+      <!--            <p>Вошел: {{ formateDate(data).enter }}</p>-->
+      <!--            <p>Вышел: {{ formateDate(data).exit }}</p>-->
+      <!--            <p>{{ formateDate(data).late.str }}</p>-->
+      <!--            <p>Работал: {{ transformDataToHuman(formateDate(data).worked) }}</p>-->
+      <!--            <p v-if="formateDate(data).notExisted">Отсутствовал:-->
+      <!--              {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}</p>-->
+      <!--            <p v-else>Не выходил</p>-->
 
-<!--            <div class="card flex justify-content-center">-->
-<!--              <Chart type="pie" :data="{-->
-<!--                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],-->
-<!--                  datasets: [-->
-<!--                      {-->
-<!--                        data: getChartOptions(formateDate(data)),-->
-<!--                        backgroundColor: ['#00FF69FF', '#FF0045FF'],-->
-<!--                        hoverBackgroundColor: '#00C2FFFF'-->
-<!--                      }-->
-<!--                      ]-->
-<!--                }" :options="chartOptions" class="w-full md:w-30rem"/>-->
-<!--            </div>-->
-<!--          </div>-->
+      <!--            <div class="card flex justify-content-center">-->
+      <!--              <Chart type="pie" :data="{-->
+      <!--                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],-->
+      <!--                  datasets: [-->
+      <!--                      {-->
+      <!--                        data: getChartOptions(formateDate(data)),-->
+      <!--                        backgroundColor: ['#00FF69FF', '#FF0045FF'],-->
+      <!--                        hoverBackgroundColor: '#00C2FFFF'-->
+      <!--                      }-->
+      <!--                      ]-->
+      <!--                }" :options="chartOptions" class="w-full md:w-30rem"/>-->
+      <!--            </div>-->
+      <!--          </div>-->
 
-<!--          <Timeline :value="getEvents(data)" align="alternate" class="customized-timeline">-->
-<!--            <template #marker="slotProps">-->
-<!--                <span-->
-<!--                    class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"-->
-<!--                    :style="{ backgroundColor: slotProps.item.color }">-->
-<!--                    <i :class="slotProps.item.icon"></i>-->
-<!--                </span>-->
-<!--            </template>-->
-<!--            <template #content="slotProps">-->
-<!--              <Card class="mt-3 surface-200">-->
-<!--                <template #title>-->
-<!--                  {{ slotProps.item.status }}-->
-<!--                </template>-->
-<!--                <template #subtitle>-->
-<!--                  {{ slotProps.item.date }}-->
-<!--                </template>-->
-<!--                <template #content>-->
-<!--                  &lt;!&ndash;                    <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-1" />&ndash;&gt;-->
-<!--                  <p v-for="v in Object.values(slotProps.item.rest)">-->
-<!--                    {{ v }}-->
-<!--                  </p>-->
+      <!--          <Timeline :value="getEvents(data)" align="alternate" class="customized-timeline">-->
+      <!--            <template #marker="slotProps">-->
+      <!--                <span-->
+      <!--                    class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"-->
+      <!--                    :style="{ backgroundColor: slotProps.item.color }">-->
+      <!--                    <i :class="slotProps.item.icon"></i>-->
+      <!--                </span>-->
+      <!--            </template>-->
+      <!--            <template #content="slotProps">-->
+      <!--              <Card class="mt-3 surface-200">-->
+      <!--                <template #title>-->
+      <!--                  {{ slotProps.item.status }}-->
+      <!--                </template>-->
+      <!--                <template #subtitle>-->
+      <!--                  {{ slotProps.item.date }}-->
+      <!--                </template>-->
+      <!--                <template #content>-->
+      <!--                  &lt;!&ndash;                    <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-1" />&ndash;&gt;-->
+      <!--                  <p v-for="v in Object.values(slotProps.item.rest)">-->
+      <!--                    {{ v }}-->
+      <!--                  </p>-->
 
-<!--                  &lt;!&ndash;                    <Button label="Read more" text></Button>&ndash;&gt;-->
-<!--                </template>-->
-<!--              </Card>-->
-<!--            </template>-->
-<!--          </Timeline>-->
+      <!--                  &lt;!&ndash;                    <Button label="Read more" text></Button>&ndash;&gt;-->
+      <!--                </template>-->
+      <!--              </Card>-->
+      <!--            </template>-->
+      <!--          </Timeline>-->
 
-<!--          <Accordion :activeIndex="-1" class="mt-5">-->
-<!--            <AccordionTab header="Все события по текущей дате" :pt="{-->
-<!--              headerAction: {-->
-<!--                class: 'bg-primary-800'-->
-<!--              },-->
-<!--              content: {-->
-<!--                class: 'surface-100'-->
-<!--              }-->
-<!--            }">-->
-<!--              <div v-for="infoItem in info.filter(i => i.date === date)">-->
-<!--                <p v-for="[k,v] in Object.entries(infoItem)">-->
-<!--                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>-->
-<!--                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>-->
-<!--                  <span v-else>{{ v }}</span>-->
-<!--                </p>-->
-<!--                <Divider/>-->
-<!--              </div>-->
-<!--            </AccordionTab>-->
-<!--          </Accordion>-->
-<!--        </Tabpanel>-->
-<!--      </Tabview>-->
+      <!--          <Accordion :activeIndex="-1" class="mt-5">-->
+      <!--            <AccordionTab header="Все события по текущей дате" :pt="{-->
+      <!--              headerAction: {-->
+      <!--                class: 'bg-primary-800'-->
+      <!--              },-->
+      <!--              content: {-->
+      <!--                class: 'surface-100'-->
+      <!--              }-->
+      <!--            }">-->
+      <!--              <div v-for="infoItem in info.filter(i => i.date === date)">-->
+      <!--                <p v-for="[k,v] in Object.entries(infoItem)">-->
+      <!--                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>-->
+      <!--                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>-->
+      <!--                  <span v-else>{{ v }}</span>-->
+      <!--                </p>-->
+      <!--                <Divider/>-->
+      <!--              </div>-->
+      <!--            </AccordionTab>-->
+      <!--          </Accordion>-->
+      <!--        </Tabpanel>-->
+      <!--      </Tabview>-->
     </template>
   </DataTable>
 </template>
+
+<style>
+.p-datatable-wrapper {
+  overflow-x: hidden !important;
+}
+</style>
