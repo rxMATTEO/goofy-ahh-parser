@@ -399,6 +399,7 @@ const confirmUploadNew = (event) => {
       {{ error }}
     </div>
     <div v-if="info" class="flex justify-content-between align-items-center">
+      <img src="/logo.svg" style="height: 24px" />
       <div>
         Рабочих дней: {{ info.workDays }}
       </div>
