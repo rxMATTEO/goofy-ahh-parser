@@ -591,11 +591,11 @@ const visible = ref(false);
         </div>
       </template>
     </Sidebar>
-    <Button icon="pi pi-bars" @click="visible = true"/>
     <div v-if="error">
       {{ error }}
     </div>
     <div v-if="info" class="flex justify-content-between align-items-center">
+      <Button icon="pi pi-bars" @click="visible = true"/>
       <img src="/logo.svg" style="height: 24px"/>
       <div>
         Рабочих дней: {{ info.workDays }}
