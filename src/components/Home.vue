@@ -535,12 +535,12 @@ async function makePrimary(name){
                         <span class="font-medium overflow-visible">
                           Отчет <span v-html="transformReportName(report.name, 'загружен <br/>')"></span>
                         </span>
-                        <a v-ripple :href="`?report=${ report.name }`"
+                        <a v-ripple :href="`?report=${ report.name }`" :class="{'p-disabled': info.reportName === report.name}"
                            class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
                           <i class="pi pi-file-pdf mr-2"></i>
                           <span class="font-medium">{{ report.name }}</span>
                         </a>
-                        <Button :disabled="info.reportName === report.name" class="ml-auto absolute right-0 top-0" icon="pi pi-star" v-tooltip="'Установить отчет по умолчанию'" @click="makePrimary(report.name)" />
+                        <Button class="ml-auto absolute right-0 top-0" icon="pi pi-star" v-tooltip="'Установить отчет по умолчанию'" @click="makePrimary(report.name)" />
 <!--                        <SpeedDial :tooltipOptions="{ position: 'left' }"-->
 <!--                                   class="relative w-2rem h-2rem ml-auto" @click.prevent :model="items"-->
 <!--                                   :radius="120" direction="down-left" type="quarter-circle"-->
