@@ -583,10 +583,9 @@ const visible = ref(false);
           </div>
           <div class="mt-auto">
             <hr class="mb-3 mx-3 border-top-1 border-none surface-border"/>
-            <a v-ripple
-               class="m-3 flex align-items-center cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-              <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle"/>
-              <span class="font-bold">Amy Elsner</span>
+            <a target="_blank" href="https://github.com/rxMATTEO/rtf-parser" v-ripple class="m-3 flex align-items-center cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+              <i class="pi pi-github" />
+              <span class="font-bold">Github</span>
             </a>
           </div>
         </div>
@@ -847,5 +846,18 @@ const visible = ref(false);
 <style>
 .p-datatable-wrapper {
   overflow-x: hidden !important;
+}
+
+a:link {
+  text-decoration: none;
+}
+a:visited {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: none;
+}
+a:active {
+  text-decoration: none;
 }
 </style>
