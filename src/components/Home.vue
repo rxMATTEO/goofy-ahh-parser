@@ -452,6 +452,7 @@ const confirmNew = () => {
     rejectLabel: 'Перезагружу позже',
     acceptLabel: 'Да',
     accept: () => {
+      router.push('/')
       window.location.reload();
     },
     reject: () => {
