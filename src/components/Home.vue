@@ -3,7 +3,7 @@ import axios from "axios";
 import {computed, inject, onMounted, Ref, ref} from "vue";
 import {FilterMatchMode} from "primevue/api";
 import {useConfirm} from "primevue/useconfirm";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {median} from "../stuff/median.ts";
 import avg from "../stuff/avg.ts";
 import late from "../stuff/late.ts";
@@ -46,18 +46,24 @@ const reports = ref<{
 }[] | null>(null);
 
 const api = inject('apiUrl');
-
+const route = useRoute();
 onMounted(async () => {
   try {
     body.value = (await axios.get(`${api}/ping`)).data;
   } catch {
     error.value = 'Не удалось подключиться к серверу. Попробуй его запустить: npm run server';
   }
+  const { report } = route.query;
+  let apiRoute = `${api}/people`;
+  if(report) {
+    apiRoute = `${api}/people?report=${report}`;
+    console.log(apiRoute)
+  }
   info.value = (await axios.get(`${api}/info`)).data;
   console.log(info.value);
-  console.log(((await axios.get(`${api}/people`)).data));
+  console.log(((await axios.get(apiRoute)).data));
   reports.value = await getLastReports();
-  people.value = (((await axios.get(`${api}/people`)).data) as Person[]).map(
+  people.value = (((await axios.get(apiRoute)).data) as Person[]).map(
       (person: Person) => {
         return {
           ...person,

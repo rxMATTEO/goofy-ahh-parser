@@ -14,12 +14,11 @@ app.use(cors());
 app.use(express.static('dist'));
 app.use(express.json());
 
-async function getDoc() {
-  const currentFileName = fs.readdirSync('docs/current')[0];
-  return readFileSync(`docs/current/${currentFileName}`).toString();
+async function getDoc(fileName = `/current/${fs.readdirSync('docs/current')[0]}`) {
+  return readFileSync(`docs${fileName}`).toString();
   // console.log('decoding')
   // const currentFileName = fs.readdirSync('docs/current')[0];
-  // console.log(currentFileName)
+  // console.log(currentFilerName)
   // return await decodeGoofyDoc(readFileSync(`docs/current/${currentFileName}`));
 }
 
@@ -140,7 +139,13 @@ app.get('/api/info', async function (req, res) {
 });
 
 app.get('/api/people', async function (req, res) {
-  const DOC = await getDoc();
+  const {report} = req.query;
+  let DOC;
+  if (report) {
+    DOC = await getDoc(`/${report}`);
+  } else {
+    DOC = await getDoc();
+  }
   res.send(parsePeople(DOC));
 });
 
