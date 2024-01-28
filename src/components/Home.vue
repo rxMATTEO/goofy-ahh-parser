@@ -479,7 +479,7 @@ function transformReportName(report: string) {
                       <span class="font-medium">Прошлые отчеты</span>
                       <i class="pi pi-chevron-down ml-auto"></i>
                     </a>
-                    <ul class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                    <ul class="list-none py-0 pl-3 pr-0 m-0 mt-3 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
                       <li class="mb-3" v-for="report in reports">
                         <span class="font-medium">Отчет от {{ transformReportName(report.name) }}</span>
                         <a v-ripple :href="`?report=${ report.name }`"
