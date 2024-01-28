@@ -58,7 +58,6 @@ onMounted(async () => {
   let apiRoute = `${api}/people`;
   if (report) {
     apiRoute = `${api}/people?report=${report}`;
-    console.log(apiRoute)
   }
   info.value = (await axios.get(`${api}/info`)).data;
   console.log(info.value);
@@ -445,10 +444,32 @@ const items = ref([
       toast.add({severity: 'error', summary: 'Delete', detail: 'Data Deleted'});
     }
   },
-])
+]);
+
+const confirmNew = () => {
+  confirm.require({
+    message: 'Вы поменяли основной отчет. Хотите сейчас перезагрузить страницу и увидеть его?',
+    header: 'Ура!',
+    icon: 'pi pi-exclamation-triangle',
+    rejectClass: 'p-button-secondary p-button-outlined',
+    rejectLabel: 'Нет',
+    acceptLabel: 'Да',
+    accept: () => {
+      window.location.reload();
+    },
+    reject: () => {
+    }
+  });
+};
+
+async function makePrimary(name){
+  const res = await axios.post(`${api}/primary`, {name: name});
+  confirmNew();
+}
 </script>
 
 <template>
+  <ConfirmDialog></ConfirmDialog>
   <div class="p-2">
     <Sidebar v-model:visible="visible">
       <template #container="{ closeCallback }">
@@ -522,6 +543,7 @@ const items = ref([
                           <i class="pi pi-file-pdf mr-2"></i>
                           <span class="font-medium">{{ report.name }}</span>
                         </a>
+                        <Button icon="pi pi-star" v-tooltip="'Установить отчет по умолчанию'" @click="makePrimary(report.name)" />
 <!--                        <SpeedDial :tooltipOptions="{ position: 'left' }"-->
 <!--                                   class="relative w-2rem h-2rem ml-auto" @click.prevent :model="items"-->
 <!--                                   :radius="120" direction="down-left" type="quarter-circle"-->
@@ -552,6 +574,9 @@ const items = ref([
     <div v-if="info" class="flex justify-content-between align-items-center">
       <Button icon="pi pi-bars" @click="visible = true"/>
       <img src="/logo.svg" style="height: 24px"/>
+      <div>
+        Имя отчета: {{ info.reportName }}
+      </div>
       <div>
         Рабочих дней: {{ info.workDays }}
       </div>

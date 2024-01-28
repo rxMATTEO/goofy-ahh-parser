@@ -36,7 +36,8 @@ function parseInfo(htmlString) {
     eventsType: events.querySelector('u').textContent,
     dates: _infoBlockToArr(dates).slice(1).join(' '),
     creationDate: events.querySelectorAll('td')[1].textContent,
-    time: `${time.querySelectorAll('b')[1].textContent} ${time.querySelectorAll('b')[3].textContent}`
+    time: `${time.querySelectorAll('b')[1].textContent} ${time.querySelectorAll('b')[3].textContent}`,
+    reportName: fs.readdirSync('docs/current')[0],
   }
   // return parser.window.document.querySelectorAll('p')[0].textContent;
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
@@ -186,7 +187,8 @@ app.post('/api/primary', async (req, res) => {
   const currentPrimaryName = fs.readdirSync('docs/current')[0];
   const { name } = req.body;
   fs.renameSync(`docs/current/${currentPrimaryName}`, `docs/${currentPrimaryName}`);
-  fs.renameSync(`docs/${currentPrimaryName}`, `docs/current/${currentPrimaryName}`);
+  fs.renameSync(`docs/${name}`, `docs/current/${name}`);
+  res.send('done');
 })
 
 app.get('/api/ping', function (req, res) {
