@@ -448,11 +448,11 @@ const items = ref([
 
 const confirmNew = () => {
   confirm.require({
-    message: 'Вы поменяли основной отчет. Хотите сейчас перезагрузить страницу и увидеть его?',
+    message: 'Вы поменяли основной отчет. Хотите сейчас перезагрузить страницу и увидеть его? К текущему можно вернуться через меню',
     header: 'Ура!',
     icon: 'pi pi-exclamation-triangle',
     rejectClass: 'p-button-secondary p-button-outlined',
-    rejectLabel: 'Нет',
+    rejectLabel: 'Перезагружу позже',
     acceptLabel: 'Да',
     accept: () => {
       window.location.reload();
@@ -530,11 +530,11 @@ async function makePrimary(name){
                         class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
                     >
                       <i class="pi pi-folder mr-2"></i>
-                      <span class="font-medium">Прошлые отчеты</span>
+                      <span class="font-medium">Другие отчеты</span>
                       <i class="pi pi-chevron-down ml-auto"></i>
                     </a>
-                    <ul class="list-none py-0 pl-3 pr-0 m-0 mt-3 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-                      <li class="mb-5" v-for="report in reports" :key="report.name">
+                    <ul class="list-none py-0 pl-0 pr-0 m-0 mt-3 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                      <li class="mb-5 relative border-1 border-gray-600 p-1" v-for="report in reports" :key="report.name">
                         <span class="font-medium overflow-visible">
                           Отчет <span v-html="transformReportName(report.name, 'загружен <br/>')"></span>
                         </span>
@@ -543,7 +543,7 @@ async function makePrimary(name){
                           <i class="pi pi-file-pdf mr-2"></i>
                           <span class="font-medium">{{ report.name }}</span>
                         </a>
-                        <Button icon="pi pi-star" v-tooltip="'Установить отчет по умолчанию'" @click="makePrimary(report.name)" />
+                        <Button :disabled="info.reportName === report.name" class="ml-auto absolute right-0 top-0" icon="pi pi-star" v-tooltip="'Установить отчет по умолчанию'" @click="makePrimary(report.name)" />
 <!--                        <SpeedDial :tooltipOptions="{ position: 'left' }"-->
 <!--                                   class="relative w-2rem h-2rem ml-auto" @click.prevent :model="items"-->
 <!--                                   :radius="120" direction="down-left" type="quarter-circle"-->
@@ -573,7 +573,7 @@ async function makePrimary(name){
     </div>
     <div v-if="info" class="flex justify-content-between align-items-center">
       <Button icon="pi pi-bars" @click="visible = true"/>
-      <img src="/logo.svg" style="height: 24px"/>
+      <img src="/logo.svg" style="height: 24px; margin-left: -50px"/>
       <div>
         Имя отчета: {{ info.reportName }}
       </div>
