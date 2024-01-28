@@ -29,6 +29,10 @@ import ConfirmPopup from "primevue/confirmpopup";
 import Steps from "primevue/steps";
 import Textarea from "primevue/textarea";
 import ProgressSpinner from "primevue/progressspinner";
+import Sidebar from "primevue/sidebar";
+import Avatar from "primevue/avatar";
+import Ripple from "primevue/ripple";
+import StyleClass from "primevue/styleclass";
 
 const router = createRouter({
   routes,
@@ -60,5 +64,9 @@ app.component('ConfirmPopup', ConfirmPopup);
 app.component('Steps', Steps);
 app.component('Textarea', Textarea);
 app.component('ProgressSpinner', ProgressSpinner);
+app.component('Sidebar', Sidebar);
+app.component('Avatar', Avatar);
 app.directive('tooltip', Tooltip);
+app.directive('ripple', Ripple);
+app.directive('styleclass', StyleClass);
 app.mount('#app');
