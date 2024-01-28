@@ -55,15 +55,12 @@ onMounted(async () => {
     error.value = 'Не удалось подключиться к серверу. Попробуй его запустить: npm run server';
   }
   const {report} = route.query;
-  let apiRoute = `${api}/people`;
-  if (report) {
-    apiRoute = `${api}/people?report=${report}`;
-  }
-  info.value = (await axios.get(`${api}/info`)).data;
+  const queryParams = report ? `?report=${report}`: ``;
+  info.value = (await axios.get(`${api}/info${queryParams}`)).data;
   console.log(info.value);
-  console.log(((await axios.get(apiRoute)).data));
+  console.log(((await axios.get(`${api}/people${queryParams}`)).data));
   reports.value = await getLastReports();
-  people.value = (((await axios.get(apiRoute)).data) as Person[]).map(
+  people.value = (((await axios.get(`${api}/people${queryParams}`)).data) as Person[]).map(
       (person: Person) => {
         return {
           ...person,
@@ -573,7 +570,9 @@ async function makePrimary(name){
     </div>
     <div v-if="info" class="flex justify-content-between align-items-center">
       <Button icon="pi pi-bars" @click="visible = true"/>
-      <img src="/logo.svg" style="height: 24px; margin-left: -50px"/>
+      <a href="/">
+        <img src="/logo.svg" style="height: 24px; margin-left: -50px"/>
+      </a>
       <div>
         Имя отчета: {{ info.reportName }}
       </div>

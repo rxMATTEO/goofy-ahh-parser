@@ -27,7 +27,7 @@ async function decodeGoofyDoc(doc) {
   return windows1251.decode(doc);
 }
 
-function parseInfo(htmlString) {
+function parseInfo(htmlString, report) {
   const parser = new jsdom.JSDOM(htmlString);
   const events = (parser.window.document.querySelectorAll('tr')[0]);
   const dates = (parser.window.document.querySelectorAll('tr')[2]);
@@ -37,7 +37,7 @@ function parseInfo(htmlString) {
     dates: _infoBlockToArr(dates).slice(1).join(' '),
     creationDate: events.querySelectorAll('td')[1].textContent,
     time: `${time.querySelectorAll('b')[1].textContent} ${time.querySelectorAll('b')[3].textContent}`,
-    reportName: fs.readdirSync('docs/current')[0],
+    reportName: report ? report: fs.readdirSync('docs/current')[0],
   }
   // return parser.window.document.querySelectorAll('p')[0].textContent;
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
@@ -135,8 +135,14 @@ function parsePeople(htmlString) {
 }
 
 app.get('/api/info', async function (req, res) {
-  const DOC = await getDoc();
-  res.send(parseInfo((DOC)));
+  const {report} = req.query;
+  let DOC;
+  if (report) {
+    DOC = await getDoc(`/${report}`);
+  } else {
+    DOC = await getDoc();
+  }
+  res.send(parseInfo(DOC, report));
 });
 
 app.get('/api/people', async function (req, res) {
