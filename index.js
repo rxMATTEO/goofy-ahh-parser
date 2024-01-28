@@ -156,13 +156,6 @@ app.get('/api/people', async function (req, res) {
   res.send(parsePeople(DOC));
 });
 
-
-app.get('/', async function (req, res) {
-  const file = readFileSync('dist/index.html');
-  res.header('Content-Type', 'text/html');
-  res.send(file);
-});
-
 app.get('/robots.txt', function (req, res) {
   res.type('text/plain');
   res.send("User-agent: *\nDisallow: /");
@@ -200,6 +193,13 @@ app.post('/api/primary', async (req, res) => {
 app.get('/api/ping', function (req, res) {
   res.send('pong');
 });
+
+app.get('*', function(req, res){
+  const file = readFileSync('dist/index.html');
+  res.header('Content-Type', 'text/html');
+  res.send(file);
+});
+
 console.log('listening on port 3001');
 app.listen(3001);
 
