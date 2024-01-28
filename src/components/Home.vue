@@ -583,9 +583,10 @@ const visible = ref(false);
           </div>
           <div class="mt-auto">
             <hr class="mb-3 mx-3 border-top-1 border-none surface-border"/>
-            <a target="_blank" href="https://github.com/rxMATTEO/rtf-parser" v-ripple class="m-3 flex align-items-center cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+            <a target="_blank" href="https://github.com/rxMATTEO/rtf-parser" v-ripple class="m-3 flex align-items-center just cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
               <i class="pi pi-github" />
               <span class="font-bold">Github</span>
+              <i class="pi pi-star-fill ml-auto" />
             </a>
           </div>
         </div>
@@ -614,17 +615,6 @@ const visible = ref(false);
 
       <div>
         Сотрудников: {{ people?.length }}
-      </div>
-
-      <div>
-        <ConfirmPopup>
-          <template #message="{ message: { message } }">
-            <div class="p-3">
-              <p v-html="message"></p>
-            </div>
-          </template>
-        </ConfirmPopup>
-        <Button @click="confirmUploadNew($event)">Загрузить отчет</Button>
       </div>
     </div>
   </div>
