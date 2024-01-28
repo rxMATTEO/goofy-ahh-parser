@@ -33,6 +33,7 @@ import Sidebar from "primevue/sidebar";
 import Avatar from "primevue/avatar";
 import Ripple from "primevue/ripple";
 import StyleClass from "primevue/styleclass";
+import SpeedDial from "primevue/speeddial";
 
 const router = createRouter({
   routes,
@@ -66,6 +67,7 @@ app.component('Textarea', Textarea);
 app.component('ProgressSpinner', ProgressSpinner);
 app.component('Sidebar', Sidebar);
 app.component('Avatar', Avatar);
+app.component('SpeedDial', SpeedDial);
 app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);
 app.directive('styleclass', StyleClass);

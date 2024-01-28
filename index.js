@@ -180,11 +180,18 @@ app.post('/api/create', upload.single('rtf'), async (req, res) => {
 
 app.get('/api/docs', function (req, res) {
   res.send(fs.readdirSync('docs', {withFileTypes: true}).filter(i => i.isFile()));
+});
+
+app.post('/api/primary', async (req, res) => {
+  const currentPrimaryName = fs.readdirSync('docs/current')[0];
+  const { name } = req.body;
+  fs.renameSync(`docs/current/${currentPrimaryName}`, `docs/${currentPrimaryName}`);
+  fs.renameSync(`docs/${currentPrimaryName}`, `docs/current/${currentPrimaryName}`);
 })
 
 app.get('/api/ping', function (req, res) {
   res.send('pong');
-})
+});
 console.log('listening on port 3001');
 app.listen(3001);
 

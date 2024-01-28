@@ -8,6 +8,7 @@ import {median} from "../stuff/median.ts";
 import avg from "../stuff/avg.ts";
 import late from "../stuff/late.ts";
 import sum from "../stuff/sum.ts";
+import {useToast} from "primevue/usetoast";
 
 type DateInfo = {
   [k in string]: Info[]
@@ -53,9 +54,9 @@ onMounted(async () => {
   } catch {
     error.value = 'Не удалось подключиться к серверу. Попробуй его запустить: npm run server';
   }
-  const { report } = route.query;
+  const {report} = route.query;
   let apiRoute = `${api}/people`;
-  if(report) {
+  if (report) {
     apiRoute = `${api}/people?report=${report}`;
     console.log(apiRoute)
   }
@@ -414,11 +415,37 @@ async function getLastReports() {
   return (await axios.get(`${api}/docs`)).data;
 }
 
-function transformReportName(report: string) {
+function transformReportName(report: string, prefix: string) {
   const date = +report.split('.')[0];
-  if (isFinite(date)) return new Date(+report.split('.')[0]).toLocaleString();
+  if (isFinite(date)) return `${prefix} ${new Date(+report.split('.')[0]).toLocaleString()}`;
   return report;
 }
+
+const toast = useToast();
+const items = ref([
+  {
+    label: 'Установить по умолчанию',
+    icon: 'pi pi-star',
+    command: async (e) => {
+      console.log(e)
+      toast.add({severity: 'info', summary: 'Ура!', detail: 'Отчет установлен по умолчанию'});
+    }
+  },
+  {
+    label: 'Update',
+    icon: 'pi pi-refresh',
+    command: () => {
+      toast.add({severity: 'success', summary: 'Update', detail: 'Data Updated'});
+    }
+  },
+  {
+    label: 'Delete',
+    icon: 'pi pi-trash',
+    command: (e) => {
+      toast.add({severity: 'error', summary: 'Delete', detail: 'Data Deleted'});
+    }
+  },
+])
 </script>
 
 <template>
@@ -449,7 +476,7 @@ function transformReportName(report: string) {
                                     }"
                     class="p-3 flex align-items-center justify-content-between text-600 cursor-pointer p-ripple"
                 >
-                  <span class="font-medium">FAVORITES</span>
+                  <span class="font-medium uppercase">Функции</span>
                   <i class="pi pi-chevron-down"></i>
                 </div>
                 <ul class="list-none p-0 m-0 overflow-hidden">
@@ -486,87 +513,22 @@ function transformReportName(report: string) {
                       <i class="pi pi-chevron-down ml-auto"></i>
                     </a>
                     <ul class="list-none py-0 pl-3 pr-0 m-0 mt-3 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-                      <li class="mb-3" v-for="report in reports">
-                        <span class="font-medium">Отчет от {{ transformReportName(report.name) }}</span>
+                      <li class="mb-5" v-for="report in reports" :key="report.name">
+                        <span class="font-medium overflow-visible">
+                          Отчет <span v-html="transformReportName(report.name, 'загружен <br/>')"></span>
+                        </span>
                         <a v-ripple :href="`?report=${ report.name }`"
                            class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
                           <i class="pi pi-file-pdf mr-2"></i>
                           <span class="font-medium">{{ report.name }}</span>
                         </a>
+<!--                        <SpeedDial :tooltipOptions="{ position: 'left' }"-->
+<!--                                   class="relative w-2rem h-2rem ml-auto" @click.prevent :model="items"-->
+<!--                                   :radius="120" direction="down-left" type="quarter-circle"-->
+<!--                                   buttonClass="p-button-warning">-->
+<!--                        </SpeedDial>-->
                       </li>
                     </ul>
-                  </li>
-                  <li>
-                    <a v-ripple
-                       class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                      <i class="pi pi-users mr-2"></i>
-                      <span class="font-medium">Team</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a v-ripple
-                       class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                      <i class="pi pi-comments mr-2"></i>
-                      <span class="font-medium">Messages</span>
-                      <span
-                          class="inline-flex align-items-center justify-content-center ml-auto bg-primary border-circle"
-                          style="min-width: 1.5rem; height: 1.5rem">3</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a v-ripple
-                       class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                      <i class="pi pi-calendar mr-2"></i>
-                      <span class="font-medium">Calendar</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a v-ripple
-                       class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                      <i class="pi pi-cog mr-2"></i>
-                      <span class="font-medium">Settings</span>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-            <ul class="list-none p-3 m-0">
-              <li>
-                <div
-                    v-ripple
-                    v-styleclass="{
-                                        selector: '@next',
-                                        enterClass: 'hidden',
-                                        enterActiveClass: 'slidedown',
-                                        leaveToClass: 'hidden',
-                                        leaveActiveClass: 'slideup'
-                                    }"
-                    class="p-3 flex align-items-center justify-content-between text-600 cursor-pointer p-ripple"
-                >
-                  <span class="font-medium">APPLICATION</span>
-                  <i class="pi pi-chevron-down"></i>
-                </div>
-                <ul class="list-none p-0 m-0 overflow-hidden">
-                  <li>
-                    <a v-ripple
-                       class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                      <i class="pi pi-folder mr-2"></i>
-                      <span class="font-medium">Projects</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a v-ripple
-                       class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                      <i class="pi pi-chart-bar mr-2"></i>
-                      <span class="font-medium">Performance</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a v-ripple
-                       class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                      <i class="pi pi-cog mr-2"></i>
-                      <span class="font-medium">Settings</span>
-                    </a>
                   </li>
                 </ul>
               </li>
@@ -722,5 +684,10 @@ a:hover {
 
 a:active {
   text-decoration: none;
+}
+
+.p-speeddial-button.p-button.p-button-icon-only {
+  width: 2rem;
+  height: 2rem;
 }
 </style>
