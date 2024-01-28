@@ -41,6 +41,9 @@ const info = ref(null);
 const people: Ref<Person[] | null> = ref(null);
 const error = ref(null);
 const confirm = useConfirm();
+const reports = ref<{
+  name: string
+}[] | null>(null);
 
 const api = inject('apiUrl');
 
@@ -53,6 +56,7 @@ onMounted(async () => {
   info.value = (await axios.get(`${api}/info`)).data;
   console.log(info.value);
   console.log(((await axios.get(`${api}/people`)).data));
+  reports.value = await getLastReports();
   people.value = (((await axios.get(`${api}/people`)).data) as Person[]).map(
       (person: Person) => {
         return {
@@ -399,6 +403,16 @@ const confirmUploadNew = (event) => {
 };
 
 const visible = ref(false);
+
+async function getLastReports() {
+  return (await axios.get(`${api}/docs`)).data;
+}
+
+function transformReportName(report: string) {
+  const date = +report.split('.')[0];
+  if (isFinite(date)) return new Date(+report.split('.')[0]).toLocaleString();
+  return report;
+}
 </script>
 
 <template>
@@ -411,7 +425,8 @@ const visible = ref(false);
               <img src="/logo.svg" style="height: 24px"/>
             </span>
             <span>
-              <Button type="button" @click="closeCallback" icon="pi pi-times" rounded outlined class="h-2rem w-2rem"></Button>
+              <Button type="button" @click="closeCallback" icon="pi pi-times" rounded outlined
+                      class="h-2rem w-2rem"></Button>
             </span>
           </div>
           <div class="overflow-y-auto">
@@ -434,16 +449,18 @@ const visible = ref(false);
                 <ul class="list-none p-0 m-0 overflow-hidden">
                   <li>
                     <a v-ripple
+                       href="/"
                        class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
                       <i class="pi pi-home mr-2"></i>
-                      <span class="font-medium">Dashboard</span>
+                      <span class="font-medium">Домашняя</span>
                     </a>
                   </li>
                   <li>
                     <a v-ripple
+                       href="/create"
                        class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                      <i class="pi pi-bookmark mr-2"></i>
-                      <span class="font-medium">Bookmarks</span>
+                      <i class="pi pi-cloud-upload mr-2"></i>
+                      <span class="font-medium">Загрузить отчет</span>
                     </a>
                   </li>
                   <li>
@@ -458,49 +475,17 @@ const visible = ref(false);
                                             }"
                         class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
                     >
-                      <i class="pi pi-chart-line mr-2"></i>
-                      <span class="font-medium">Reports</span>
+                      <i class="pi pi-folder mr-2"></i>
+                      <span class="font-medium">Прошлые отчеты</span>
                       <i class="pi pi-chevron-down ml-auto"></i>
                     </a>
                     <ul class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-                      <li>
-                        <a
-                            v-ripple
-                            v-styleclass="{
-                                                        selector: '@next',
-                                                        enterClass: 'hidden',
-                                                        enterActiveClass: 'slidedown',
-                                                        leaveToClass: 'hidden',
-                                                        leaveActiveClass: 'slideup'
-                                                    }"
-                            class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple"
-                        >
-                          <i class="pi pi-chart-line mr-2"></i>
-                          <span class="font-medium">Revenue</span>
-                          <i class="pi pi-chevron-down ml-auto"></i>
-                        </a>
-                        <ul class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-                          <li>
-                            <a v-ripple
-                               class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                              <i class="pi pi-table mr-2"></i>
-                              <span class="font-medium">View</span>
-                            </a>
-                          </li>
-                          <li>
-                            <a v-ripple
-                               class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                              <i class="pi pi-search mr-2"></i>
-                              <span class="font-medium">Search</span>
-                            </a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li>
-                        <a v-ripple
+                      <li class="mb-3" v-for="report in reports">
+                        <span class="font-medium">Отчет от {{ transformReportName(report.name) }}</span>
+                        <a v-ripple :href="`?report=${ report.name }`"
                            class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                          <i class="pi pi-chart-line mr-2"></i>
-                          <span class="font-medium">Expenses</span>
+                          <i class="pi pi-file-pdf mr-2"></i>
+                          <span class="font-medium">{{ report.name }}</span>
                         </a>
                       </li>
                     </ul>
@@ -583,10 +568,11 @@ const visible = ref(false);
           </div>
           <div class="mt-auto">
             <hr class="mb-3 mx-3 border-top-1 border-none surface-border"/>
-            <a target="_blank" href="https://github.com/rxMATTEO/rtf-parser" v-ripple class="m-3 flex align-items-center just cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-              <i class="pi pi-github" />
+            <a target="_blank" href="https://github.com/rxMATTEO/rtf-parser" v-ripple
+               class="m-3 flex align-items-center just cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
+              <i class="pi pi-github"/>
               <span class="font-bold">Github</span>
-              <i class="pi pi-star-fill ml-auto" />
+              <i class="pi pi-star-fill ml-auto"/>
             </a>
           </div>
         </div>
@@ -707,128 +693,6 @@ const visible = ref(false);
           </template>
         </Column>
       </DataTable>
-      <!--      <Tabview :scrollable="true" style="width: 95vw" :pt="{-->
-      <!--        nextButton: 'bg-primary',-->
-      <!--        previousButton: 'bg-primary',-->
-      <!--      }">-->
-      <!--        <Tabpanel header="ЗА ВЕСЬ ПЕРИОД">-->
-      <!--          <div class="flex justify-content-between">-->
-      <!--&lt;!&ndash;            <p>{{ getStatsForAll(dates).late.str }}</p>&ndash;&gt;-->
-      <!--            <p>Работал: {{ getStatsForAll(dates).worked.hours }} часов(а) {{getStatsForAll(dates).worked.minutes}} минут</p>-->
-      <!--            <p v-if="getStatsForAll(dates).notExisted">Отсутствовал:-->
-      <!--              {{-->
-      <!--                `${getStatsForAll(dates).notExisted.hours} часов(а) ${getStatsForAll(dates).notExisted.minutes} минут`-->
-      <!--              }}-->
-      <!--            </p>-->
-      <!--            <p v-else>Не выходил</p>-->
-
-      <!--            <div class="card flex justify-content-center">-->
-      <!--              <Chart type="pie" :data="{-->
-      <!--                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],-->
-      <!--                  datasets: [-->
-      <!--                      {-->
-      <!--                        data: getChartOptions(getStatsForAll(dates)),-->
-      <!--                        backgroundColor: ['#00FF69FF', '#FF0045FF'],-->
-      <!--                        hoverBackgroundColor: '#00C2FFFF'-->
-      <!--                      }-->
-      <!--                      ]-->
-      <!--                }" :options="chartOptions" class="w-full md:w-30rem"/>-->
-      <!--            </div>-->
-      <!--          </div>-->
-
-      <!--          <Accordion :activeIndex="-1" class="mt-5">-->
-      <!--            <AccordionTab header="Все события по текущей дате" :pt="{-->
-      <!--              headerAction: {-->
-      <!--                class: 'bg-primary-800'-->
-      <!--              },-->
-      <!--              content: {-->
-      <!--                class: 'surface-100'-->
-      <!--              }-->
-      <!--            }">-->
-      <!--              <div v-for="infoItem in info">-->
-      <!--                <p v-for="[k,v] in Object.entries(infoItem)">-->
-      <!--                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>-->
-      <!--                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>-->
-      <!--                  <span v-else>{{ v }}</span>-->
-      <!--                </p>-->
-      <!--                <Divider/>-->
-      <!--              </div>-->
-      <!--            </AccordionTab>-->
-      <!--          </Accordion>-->
-      <!--        </Tabpanel>-->
-      <!--        <Tabpanel v-for="[date, data] in Object.entries(dates)" :header="date" contentStyle="width: 95vw">-->
-      <!--          <div class="flex justify-content-between">-->
-      <!--            <p>Вошел: {{ formateDate(data).enter }}</p>-->
-      <!--            <p>Вышел: {{ formateDate(data).exit }}</p>-->
-      <!--            <p>{{ formateDate(data).late.str }}</p>-->
-      <!--            <p>Работал: {{ transformDataToHuman(formateDate(data).worked) }}</p>-->
-      <!--            <p v-if="formateDate(data).notExisted">Отсутствовал:-->
-      <!--              {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}</p>-->
-      <!--            <p v-else>Не выходил</p>-->
-
-      <!--            <div class="card flex justify-content-center">-->
-      <!--              <Chart type="pie" :data="{-->
-      <!--                  labels: ['Работал (минут)', 'Отсутствовал (минут)'],-->
-      <!--                  datasets: [-->
-      <!--                      {-->
-      <!--                        data: getChartOptions(formateDate(data)),-->
-      <!--                        backgroundColor: ['#00FF69FF', '#FF0045FF'],-->
-      <!--                        hoverBackgroundColor: '#00C2FFFF'-->
-      <!--                      }-->
-      <!--                      ]-->
-      <!--                }" :options="chartOptions" class="w-full md:w-30rem"/>-->
-      <!--            </div>-->
-      <!--          </div>-->
-
-      <!--          <Timeline :value="getEvents(data)" align="alternate" class="customized-timeline">-->
-      <!--            <template #marker="slotProps">-->
-      <!--                <span-->
-      <!--                    class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"-->
-      <!--                    :style="{ backgroundColor: slotProps.item.color }">-->
-      <!--                    <i :class="slotProps.item.icon"></i>-->
-      <!--                </span>-->
-      <!--            </template>-->
-      <!--            <template #content="slotProps">-->
-      <!--              <Card class="mt-3 surface-200">-->
-      <!--                <template #title>-->
-      <!--                  {{ slotProps.item.status }}-->
-      <!--                </template>-->
-      <!--                <template #subtitle>-->
-      <!--                  {{ slotProps.item.date }}-->
-      <!--                </template>-->
-      <!--                <template #content>-->
-      <!--                  &lt;!&ndash;                    <img v-if="slotProps.item.image" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.item.image}`" :alt="slotProps.item.name" width="200" class="shadow-1" />&ndash;&gt;-->
-      <!--                  <p v-for="v in Object.values(slotProps.item.rest)">-->
-      <!--                    {{ v }}-->
-      <!--                  </p>-->
-
-      <!--                  &lt;!&ndash;                    <Button label="Read more" text></Button>&ndash;&gt;-->
-      <!--                </template>-->
-      <!--              </Card>-->
-      <!--            </template>-->
-      <!--          </Timeline>-->
-
-      <!--          <Accordion :activeIndex="-1" class="mt-5">-->
-      <!--            <AccordionTab header="Все события по текущей дате" :pt="{-->
-      <!--              headerAction: {-->
-      <!--                class: 'bg-primary-800'-->
-      <!--              },-->
-      <!--              content: {-->
-      <!--                class: 'surface-100'-->
-      <!--              }-->
-      <!--            }">-->
-      <!--              <div v-for="infoItem in info.filter(i => i.date === date)">-->
-      <!--                <p v-for="[k,v] in Object.entries(infoItem)">-->
-      <!--                  <span class="text-primary-500 font-bold">{{ eventTypeMatch(k) }}: </span>-->
-      <!--                  <span v-if="k === 'keyLabel' || k === 'pass'">{{ `${infoItem.keyLabel} ${infoItem.pass}` }}</span>-->
-      <!--                  <span v-else>{{ v }}</span>-->
-      <!--                </p>-->
-      <!--                <Divider/>-->
-      <!--              </div>-->
-      <!--            </AccordionTab>-->
-      <!--          </Accordion>-->
-      <!--        </Tabpanel>-->
-      <!--      </Tabview>-->
     </template>
   </DataTable>
 </template>
@@ -841,12 +705,15 @@ const visible = ref(false);
 a:link {
   text-decoration: none;
 }
+
 a:visited {
   text-decoration: none;
 }
+
 a:hover {
   text-decoration: none;
 }
+
 a:active {
   text-decoration: none;
 }

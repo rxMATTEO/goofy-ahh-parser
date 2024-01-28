@@ -14,17 +14,16 @@ app.use(cors());
 app.use(express.static('dist'));
 app.use(express.json());
 
-async function getDoc(){
+async function getDoc() {
   const currentFileName = fs.readdirSync('docs/current')[0];
   return readFileSync(`docs/current/${currentFileName}`).toString();
-  return;
   // console.log('decoding')
   // const currentFileName = fs.readdirSync('docs/current')[0];
   // console.log(currentFileName)
   // return await decodeGoofyDoc(readFileSync(`docs/current/${currentFileName}`));
 }
 
-async function decodeGoofyDoc(doc){
+async function decodeGoofyDoc(doc) {
   const windows1251 = await import('windows-1251');
   return windows1251.decode(doc);
 }
@@ -173,6 +172,10 @@ app.post('/api/create', upload.single('rtf'), async (req, res) => {
   // console.log(decoded)
   res.send('done');
 });
+
+app.get('/api/docs', function (req, res) {
+  res.send(fs.readdirSync('docs', {withFileTypes: true}).filter(i => i.isFile()));
+})
 
 app.get('/api/ping', function (req, res) {
   res.send('pong');
