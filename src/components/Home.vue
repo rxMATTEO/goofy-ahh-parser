@@ -597,7 +597,7 @@ async function makePrimary(name) {
     </div>
   </div>
 
-  <DataTable v-model:expandedRows="expandedPeople" tableStyle="max-width: 100vw"
+  <DataTable v-model:expandedRows="expandedPeople" tableStyle="max-width: 100vw" selection-mode="'single'"
              :value="people" paginator :rows="people?.length" removableSort
              :rowsPerPageOptions="rowsPerPage" :loading="!people" showGridlines
              :filterDisplay="'row'" :globalFilterFields="['firstName', 'lastName', 'middleName']"
