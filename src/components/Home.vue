@@ -597,7 +597,7 @@ async function makePrimary(name) {
     </div>
   </div>
 
-  <DataTable v-model:expandedRows="expandedPeople" tableStyle="max-width: 100vw" selection-mode="'single'"
+  <DataTable v-model:expandedRows="expandedPeople" tableStyle="max-width: 100vw" :selectionMode="'single'"
              :value="people" paginator :rows="people?.length" removableSort
              :rowsPerPageOptions="rowsPerPage" :loading="!people" showGridlines
              :globalFilterFields="['firstName', 'lastName', 'middleName']"
@@ -644,6 +644,11 @@ async function makePrimary(name) {
           style: {
             // 'table-layout': 'fixed',
             'overflow': 'hidden'
+          }
+        },
+        thead: {
+          style: {
+            display: 'none'
           }
         }
       }">
@@ -716,7 +721,7 @@ a:active {
 }
 
 td:last-child {
-  width: 50px !important
+  //width: 50px !important
 }
 td:nth-child(2) {
   width: 350px !important
