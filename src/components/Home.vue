@@ -55,7 +55,7 @@ onMounted(async () => {
     error.value = 'Не удалось подключиться к серверу. Попробуй его запустить: npm run server';
   }
   const {report} = route.query;
-  const queryParams = report ? `?report=${report}`: ``;
+  const queryParams = report ? `?report=${report}` : ``;
   info.value = (await axios.get(`${api}/info${queryParams}`)).data;
   console.log(info.value);
   console.log(((await axios.get(`${api}/people${queryParams}`)).data));
@@ -460,7 +460,7 @@ const confirmNew = () => {
   });
 };
 
-async function makePrimary(name){
+async function makePrimary(name) {
   const res = await axios.post(`${api}/primary`, {name: name});
   confirmNew();
 }
@@ -532,21 +532,24 @@ async function makePrimary(name){
                       <i class="pi pi-chevron-down ml-auto"></i>
                     </a>
                     <ul class="list-none py-0 pl-0 pr-0 m-0 mt-3 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-                      <li class="mb-5 relative border-1 border-gray-600 p-1" v-for="report in reports" :key="report.name">
+                      <li class="mb-5 relative border-1 border-gray-600 p-1" v-for="report in reports"
+                          :key="report.name">
                         <span class="font-medium overflow-visible">
                           Отчет <span v-html="transformReportName(report.name, 'загружен <br/>')"></span>
                         </span>
-                        <a v-ripple :href="`?report=${ report.name }`" :class="{'p-disabled': info.reportName === report.name}"
+                        <a v-ripple :href="`?report=${ report.name }`"
+                           :class="{'p-disabled': info.reportName === report.name}"
                            class="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
                           <i class="pi pi-file-pdf mr-2"></i>
                           <span class="font-medium">{{ report.name }}</span>
                         </a>
-                        <Button class="ml-auto absolute right-0 top-0" icon="pi pi-star" v-tooltip="'Установить отчет по умолчанию'" @click="makePrimary(report.name)" />
-<!--                        <SpeedDial :tooltipOptions="{ position: 'left' }"-->
-<!--                                   class="relative w-2rem h-2rem ml-auto" @click.prevent :model="items"-->
-<!--                                   :radius="120" direction="down-left" type="quarter-circle"-->
-<!--                                   buttonClass="p-button-warning">-->
-<!--                        </SpeedDial>-->
+                        <Button class="ml-auto absolute right-0 top-0" icon="pi pi-star"
+                                v-tooltip="'Установить отчет по умолчанию'" @click="makePrimary(report.name)"/>
+                        <!--                        <SpeedDial :tooltipOptions="{ position: 'left' }"-->
+                        <!--                                   class="relative w-2rem h-2rem ml-auto" @click.prevent :model="items"-->
+                        <!--                                   :radius="120" direction="down-left" type="quarter-circle"-->
+                        <!--                                   buttonClass="p-button-warning">-->
+                        <!--                        </SpeedDial>-->
                       </li>
                     </ul>
                   </li>
@@ -571,11 +574,17 @@ async function makePrimary(name){
     </div>
     <div v-if="info" class="flex justify-content-between align-items-center">
       <Button icon="pi pi-bars" @click="visible = true"/>
-      <a href="/">
-        <img src="/logo.svg" style="height: 24px; margin-left: -50px"/>
+      <a href="/" class="absolute" style="left: 100px">
+        <img src="/logo.svg" style="height: 24px;"/>
       </a>
+      <!--      <div>-->
+      <!--        Имя отчета: {{ info.reportName }}-->
+      <!--      </div>-->
       <div>
-        Имя отчета: {{ info.reportName }}
+        Период : {{ info.dates }}
+      </div>
+      <div>
+        Сотрудников: {{ people?.length }}
       </div>
       <div>
         Рабочих дней: {{ info.workDays }}
@@ -585,15 +594,13 @@ async function makePrimary(name){
           info.creationDate.split(' ').slice(0, 2).join(' ') + info.creationDate.split(' ')[2] + ':' + info.creationDate.split(' ').slice(3).join(' ')
         }}
       </div>
+      <!--      <div>-->
+      <!--        Время: {{ info.time }}-->
+      <!--      </div>-->
       <div>
-        Период : {{ info.dates }}
-      </div>
-      <div>
-        Время: {{ info.time }}
-      </div>
-
-      <div>
-        Сотрудников: {{ people?.length }}
+        <a href="/create">
+          <Button icon="pi pi-cloud-upload" label="Загрузить отчет"></Button>
+        </a>
       </div>
     </div>
   </div>
