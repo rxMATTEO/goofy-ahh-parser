@@ -580,19 +580,11 @@ async function makePrimary(name) {
       <!--      <div>-->
       <!--        Имя отчета: {{ info.reportName }}-->
       <!--      </div>-->
-      <div>
-        Период : {{ info.dates }}
-      </div>
-      <div>
-        Сотрудников: {{ people?.length }}
-      </div>
-      <div>
-        Рабочих дней: {{ info.workDays }}
-      </div>
-      <div>
-        {{
-          info.creationDate.split(' ').slice(0, 2).join(' ') + info.creationDate.split(' ')[2] + ':' + info.creationDate.split(' ').slice(3).join(' ')
-        }}
+      <div class="flex gap-5 justify-content-between">
+        <p>Период: {{ info.dates }}</p>
+        <p>Сотрудников: {{ people?.length }}</p>
+        <p>Рабочих дней: {{ info.workDays }}</p>
+        <p>{{ info.creationDate.split(' ').slice(0, 2).join(' ') + info.creationDate.split(' ')[2] + ':' + info.creationDate.split(' ').slice(3).join(' ') }}</p>
       </div>
       <!--      <div>-->
       <!--        Время: {{ info.time }}-->
@@ -616,7 +608,7 @@ async function makePrimary(name) {
                },
                        table: {
           style: {
-            'table-layout': 'fixed'
+            // 'table-layout': 'fixed'
           }
         }
              }"
@@ -650,7 +642,7 @@ async function makePrimary(name) {
       <DataTable :value="Object.entries(dates)" :pt="{
         table: {
           style: {
-            'table-layout': 'fixed',
+            // 'table-layout': 'fixed',
             'overflow': 'hidden'
           }
         }
@@ -721,5 +713,12 @@ a:active {
 .p-speeddial-button.p-button.p-button-icon-only {
   width: 2rem;
   height: 2rem;
+}
+
+td:last-child {
+  width: 50px !important
+}
+td:nth-child(2) {
+  width: 350px !important
 }
 </style>
