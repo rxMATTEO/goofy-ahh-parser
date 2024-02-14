@@ -656,7 +656,7 @@ async function makePrimary(name) {
         </Column>
         <Column :style="{width: `257px`}">
           <template #body="{data: [date, data]}">
-            {{ date }}
+            {{ new Date(Date.parse(date)).toLocaleDateString() }}
           </template>
         </Column>
         <Column :style="{width: `257px`}">
