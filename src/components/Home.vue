@@ -9,6 +9,7 @@ import avg from "../stuff/avg.ts";
 import late from "../stuff/late.ts";
 import sum from "../stuff/sum.ts";
 import {useToast} from "primevue/usetoast";
+import nabuhal from "../stuff/nabuhal.ts";
 
 type DateInfo = {
   [k in string]: Info[]
@@ -112,6 +113,8 @@ onMounted(async () => {
   people.value.forEach(chel => {
     if (Object.keys(chel.dates).length > 0) {
       chel.fullFormatted = Object.entries(chel.dates).map(([date, data]) => formateDate(data));
+      const nabuhalTime = nabuhal(chel.fullFormatted.map(i => i.overworked).filter(i => i.hours >= 0 && i.minutes >= 0));
+      chel.nabuhal = convertMinsToHrsMins( nabuhalTime.hours * 60 + nabuhalTime.minutes );
       chel.median = normilizeDate(convertMinsToHrsMins(median(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)))).str;
       chel.avg = normilizeDate(convertMinsToHrsMins(avg(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)).toFixed(0))).str;
       chel.lateTimes = (late(Object.entries(chel.dates).map(([date, data]) => {
@@ -148,6 +151,10 @@ const columns = computed(() => {
     notExistedAll: {
       header: 'Отсутствовал, всего',
       field: 'fullInfo.notExisted.str'
+    },
+    nabuhal: {
+      header: 'Набухал, всего',
+      field: 'nabuhal'
     },
     late: {
       header: "Опоздал, раз",
@@ -243,7 +250,7 @@ function formateDate(info: Info[]) {
     exit: lastExit,
     worked: getResultFromDate(difference),
     late: result2,
-    overworked: getResultFromDate(getDate(lastExit) - getDate("18:00")),
+    overworked: getResultFromDate(getDate(lastExit) - getDate("19:00")),
     notExisted: normilizeDate(sumNormilized)
   };
 }
@@ -677,6 +684,12 @@ async function makePrimary(name) {
         <Column :style="{width: `257px`}">
           <template #body="{data: [_, data]}">
             {{ `${formateDate(data).notExisted.hours} часов (а) ${formateDate(data).notExisted.minutes} минут` }}
+          </template>
+        </Column>
+        <Column :style="{width: `257px`}">
+          <template #body="{data: [_, data]}">
+            <p v-if="getResultFromDate(getDate(data[data.length - 1].time) - getDate('19:00')).hours < 0 && getResultFromDate(getDate(data[data.length - 1].time) - getDate('19:00')).minutes < 0">0 часов 0 минут</p>
+            <p v-else>{{ getResultFromDate(getDate(data[data.length - 1].time) - getDate("19:00")).hours }} часов {{ getResultFromDate(getDate(data[data.length - 1].time) - getDate("19:00")).minutes }} минут</p>
           </template>
         </Column>
         <Column :style="{width: `257px`}">
