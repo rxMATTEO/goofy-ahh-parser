@@ -114,7 +114,8 @@ onMounted(async () => {
     if (Object.keys(chel.dates).length > 0) {
       chel.fullFormatted = Object.entries(chel.dates).map(([date, data]) => formateDate(data));
       const nabuhalTime = nabuhal(chel.fullFormatted.map(i => i.overworked).filter(i => i.hours >= 0 && i.minutes >= 0));
-      chel.nabuhal = convertMinsToHrsMins( nabuhalTime.hours * 60 + nabuhalTime.minutes );
+      const nabuhalNormilized = normilizeDate(convertMinsToHrsMins( nabuhalTime.hours * 60 + nabuhalTime.minutes ))
+      chel.nabuhal = `${nabuhalNormilized.hours} часов ${nabuhalNormilized.minutes} минут`;
       chel.median = normilizeDate(convertMinsToHrsMins(median(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)))).str;
       chel.avg = normilizeDate(convertMinsToHrsMins(avg(chel.fullFormatted.map(el => (el.notExisted.hours) * 60 + el.notExisted.minutes)).toFixed(0))).str;
       chel.lateTimes = (late(Object.entries(chel.dates).map(([date, data]) => {
