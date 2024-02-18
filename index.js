@@ -9,13 +9,16 @@ const jsdom = require("jsdom");
 const {writeFileSync, readFileSync} = require("fs");
 const {exec} = require('child_process');
 const fs = require('fs');
+const {join} = require("path");
 
 app.use(cors());
 app.use(express.static('dist'));
 app.use(express.json());
 
-async function getDoc(fileName = `/current/${fs.readdirSync('docs/current')[0]}`) {
-  return readFileSync(`docs${fileName}`).toString();
+const currentDocs = join(__dirname, 'docs', 'current');
+
+async function getDoc(fileName = fs.readdirSync(currentDocs)[0]) {
+  return readFileSync(join('docs', 'current', fileName)).toString();
   // console.log('decoding')
   // const currentFileName = fs.readdirSync('docs/current')[0];
   // console.log(currentFilerName)
@@ -37,7 +40,7 @@ function parseInfo(htmlString, report) {
     dates: _infoBlockToArr(dates).slice(1).join(' '),
     creationDate: events.querySelectorAll('td')[1].textContent,
     time: `${time.querySelectorAll('b')[1].textContent} ${time.querySelectorAll('b')[3].textContent}`,
-    reportName: report ? report: fs.readdirSync('docs/current')[0],
+    reportName: report ? report: fs.readdirSync(currentDocs)[0],
   }
   // return parser.window.document.querySelectorAll('p')[0].textContent;
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
@@ -167,12 +170,17 @@ app.post('/api/create', upload.single('rtf'), async (req, res) => {
   }
   const file = req.file.buffer;
   const decoded = await decodeGoofyDoc(file);
-  const currentFileName = fs.readdirSync('docs/current')[0];
+  const currentFileName = fs.readdirSync(currentDocs)[0];
 
   const NEW_FILE_NAME = `${Date.now()}.htm`;
 
-  fs.renameSync(`docs/current/${currentFileName}`, `docs/${currentFileName}`);
-  fs.writeFileSync(`docs/current/${NEW_FILE_NAME}`, decoded);
+  const prevLocation = join('docs', 'current', currentFileName);
+  const newLocation = join('docs', currentFileName);
+
+  fs.renameSync(prevLocation, newLocation);
+
+  const newName = join('docs', 'current', NEW_FILE_NAME);
+  fs.writeFileSync(newName, decoded);
   // DOC = decoded;
   // console.log(decoded)
   res.send('done');
@@ -183,10 +191,15 @@ app.get('/api/docs', function (req, res) {
 });
 
 app.post('/api/primary', async (req, res) => {
-  const currentPrimaryName = fs.readdirSync('docs/current')[0];
+  const currentPrimaryName = fs.readdirSync(currentDocs)[0];
   const { name } = req.body;
-  fs.renameSync(`docs/current/${currentPrimaryName}`, `docs/${currentPrimaryName}`);
-  fs.renameSync(`docs/${name}`, `docs/current/${name}`);
+  const prevLocation = join('docs', 'current', currentPrimaryName);
+  const newLocation = join('docs', currentPrimaryName);
+  fs.renameSync(prevLocation, newLocation);
+
+  const currentName = join('docs', name);
+  const newName = join('docs', 'current', name);
+  fs.renameSync(currentName, newName);
   res.send('done');
 })
 
