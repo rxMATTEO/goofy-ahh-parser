@@ -90,6 +90,11 @@ onMounted(async () => {
       }
   );
 
+  if(people.value?.length === 0 || !info.value){
+    error.value = 'Список отчетов пуст. Загрузите новый';
+    return;
+  }
+
   people.value?.map(chel => {
     chel.dates = {};
     chel.info.forEach((info, index, array) => {
@@ -577,18 +582,18 @@ async function makePrimary(name) {
         </div>
       </template>
     </Sidebar>
-    <div v-if="error">
-      {{ error }}
-    </div>
-    <div v-if="info" class="flex justify-content-between align-items-center">
+    <div class="flex justify-content-between align-items-center">
       <Button icon="pi pi-bars" @click="visible = true"/>
+      <div v-if="error">
+        {{ error }}
+      </div>
       <a href="/" class="absolute" style="left: 100px">
         <img src="/logo.svg" style="height: 24px;"/>
       </a>
       <!--      <div>-->
       <!--        Имя отчета: {{ info.reportName }}-->
       <!--      </div>-->
-      <div class="flex gap-5 justify-content-between">
+      <div v-if="info" class="flex gap-5 justify-content-between">
         <p>Период: {{ info.dates }}</p>
         <p>Сотрудников: {{ people?.length }}</p>
         <p>Рабочих дней: {{ info.workDays }}</p>

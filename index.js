@@ -18,6 +18,7 @@ app.use(express.json());
 const currentDocs = join(__dirname, 'docs', 'current');
 
 async function getDoc(fileName = fs.readdirSync(currentDocs)[0]) {
+  if (!fileName) return null;
   return readFileSync(join('docs', 'current', fileName)).toString();
   // console.log('decoding')
   // const currentFileName = fs.readdirSync('docs/current')[0];
@@ -35,12 +36,13 @@ function parseInfo(htmlString, report) {
   const events = (parser.window.document.querySelectorAll('tr')[0]);
   const dates = (parser.window.document.querySelectorAll('tr')[2]);
   const time = (parser.window.document.querySelectorAll('tr')[3]);
+  if (!htmlString) return null;
   return {
     eventsType: events.querySelector('u').textContent,
     dates: _infoBlockToArr(dates).slice(1).join(' '),
     creationDate: events.querySelectorAll('td')[1].textContent,
     time: `${time.querySelectorAll('b')[1].textContent} ${time.querySelectorAll('b')[3].textContent}`,
-    reportName: report ? report: fs.readdirSync(currentDocs)[0],
+    reportName: report ? report : fs.readdirSync(currentDocs)[0],
   }
   // return parser.window.document.querySelectorAll('p')[0].textContent;
   // return (parser.window.document.querySelectorAll('p')[0].textContent.replace(/\s\s+/g, '/replace').split('/replace').join('\t').split('\t').filter(i => i));
@@ -174,10 +176,12 @@ app.post('/api/create', upload.single('rtf'), async (req, res) => {
 
   const NEW_FILE_NAME = `${Date.now()}.htm`;
 
-  const prevLocation = join('docs', 'current', currentFileName);
-  const newLocation = join('docs', currentFileName);
+  if (currentFileName) {
+    const prevLocation = join('docs', 'current', currentFileName);
+    const newLocation = join('docs', currentFileName);
+    fs.renameSync(prevLocation, newLocation);
+  }
 
-  fs.renameSync(prevLocation, newLocation);
 
   const newName = join('docs', 'current', NEW_FILE_NAME);
   fs.writeFileSync(newName, decoded);
@@ -192,7 +196,7 @@ app.get('/api/docs', function (req, res) {
 
 app.post('/api/primary', async (req, res) => {
   const currentPrimaryName = fs.readdirSync(currentDocs)[0];
-  const { name } = req.body;
+  const {name} = req.body;
   const prevLocation = join('docs', 'current', currentPrimaryName);
   const newLocation = join('docs', currentPrimaryName);
   fs.renameSync(prevLocation, newLocation);
@@ -207,7 +211,7 @@ app.get('/api/ping', function (req, res) {
   res.send('pong');
 });
 
-app.get('*', function(req, res){
+app.get('*', function (req, res) {
   const file = readFileSync('dist/index.html');
   res.header('Content-Type', 'text/html');
   res.send(file);
